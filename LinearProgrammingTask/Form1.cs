@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using Mehroz;
 using System.IO;
 using System.Text;
+using System.Collections.Generic;
 
 namespace LinearProgrammingTask
 {
@@ -153,7 +154,7 @@ namespace LinearProgrammingTask
                 for (int j = 0; j < (int)this.variableCount.Value+1; j++)
                     this.artificialBaseMethodGrid[j, i].Value = lines[i, j].ToString();
 
-            // Расчет коэф-ов при искуственной целевой функции
+            // Расчет коэф-ов при "искуственной" целевой функции
             for (int i = 0; i < (int)this.variableCount.Value + 1; i++)
             {
                 Fraction tmp = 0;
@@ -166,7 +167,47 @@ namespace LinearProgrammingTask
                 tmp *= -1;
                 this.artificialBaseMethodGrid[i,(int)this.linesCount.Value].Value = tmp.ToString();
             }
+
+            // Получение таблицы в которой остались переменные из начальной задачи(тут начинается цикл)
+
+            // Нахождение всех возможных опорных элементов
+
+            List<Point> supEl = suportElements(0);// Нашли все опорные элементы (в самой первой таблице)
+            for (int i = 0; i < (int)this.linesCount.Value; i++)
+                for(int j = 0; j < (int)this.variableCount.Value; j++)
+                    if(supEl.Contains(new Point(j,i)))
+                        this.artificialBaseMethodGrid[j,i].Style.BackColor = Color.FromArgb(255, 0, 255, 0);// Закрашивание ячейки с опорным элементом
+
+            int startRow = (int)this.linesCount.Value + 2;// Строка, с которой будет начинаться каждая новая таблица
+            this.artificialBaseMethodGrid.Rows[startRow].HeaderCell.Value="x(1)";
         }
+
+        private List<Point> suportElements(int startRow)
+        {
+            List<Point> supElements = new List<Point>();
+            for(int i=0;i<(int)this.variableCount.Value;i++)
+            {
+                if(Fraction.ToFraction(this.artificialBaseMethodGrid[i,startRow+(int)this.linesCount.Value].Value.ToString())<0)
+                {
+                    Fraction min = Int32.MaxValue;
+                    // Поиск минимума по столбцу
+                    for (int j=startRow;j<startRow+(int)this.linesCount.Value;j++)
+                    {
+                        if (Fraction.ToFraction(this.artificialBaseMethodGrid[i, j].Value.ToString()) > 0)
+                        {
+                            if (Fraction.ToFraction(this.artificialBaseMethodGrid[(int)this.variableCount.Value, j].Value.ToString()) / Fraction.ToFraction(this.artificialBaseMethodGrid[i, j].Value.ToString()) < min)
+                                min = Fraction.ToFraction(this.artificialBaseMethodGrid[(int)this.variableCount.Value, j].Value.ToString()) / Fraction.ToFraction(this.artificialBaseMethodGrid[i, j].Value.ToString());
+                        }
+                    }
+
+                    // Записываем все возможные элементы в столбце
+                    for (int j = startRow; j < startRow + (int)this.linesCount.Value; j++)
+                        if (Fraction.ToFraction(this.artificialBaseMethodGrid[i, j].Value.ToString())!=0 && Fraction.ToFraction(this.artificialBaseMethodGrid[(int)this.variableCount.Value, j].Value.ToString()) / Fraction.ToFraction(this.artificialBaseMethodGrid[i, j].Value.ToString()) == min)
+                            supElements.Add(new Point(i,j));
+                }
+            }
+            return supElements;
+        }// Поиск всех возможных опорных элементов
 
         private void MenuItemSaveAs_Click(object sender, EventArgs e)
         {

@@ -116,7 +116,8 @@ namespace LinearProgrammingTask
 
         private void btn_OK_Click(object sender, EventArgs e)// Считывание таблицы в массив и собственно решение задачи ЛП
         {
-            for (int i = 0; i < (int)this.variableCount.Value+1; i++)
+            
+                for (int i = 0; i < (int)this.variableCount.Value+1; i++)
                 for (int j = 0; j < (int)this.linesCount.Value; j++)
                     lines[j, i] = Fraction.ToFraction(linesGrid[i, j].Value.ToString());
 
@@ -136,19 +137,24 @@ namespace LinearProgrammingTask
 
             // Метод искусственного базиса
             this.tabControl.SelectedTab = this.tabPage3;// Переключение на вкладку симплекс метода
+            
             this.artificialBaseMethodGrid.ColumnCount = 20;
             this.artificialBaseMethodGrid.RowCount = 100;
+            this.artificialBaseMethodGrid.CurrentCell = null;// Чтоб в самом начале не была выбрана никакая ячейка
             // Ебаная хуета другого выхода я не нашел(
             foreach (DataGridViewColumn el in this.artificialBaseMethodGrid.Columns)
                 el.Width = 70;
             this.artificialBaseMethodGrid.TopLeftHeaderCell.Value = "x(0)";
 
             // Заполение заголовков строк и столбцов
-            for(int i=0;i<(int)this.variableCount.Value;i++)
+            List<String> tempVars=new List<string>();// Искуственно введенные переменные
+            for (int i=0;i<(int)this.variableCount.Value;i++)
                 this.artificialBaseMethodGrid.Columns[i].HeaderText = String.Concat("x", (i+1).ToString());
-            for(int i =0;i<(int)this.linesCount.Value;i++)
+            for (int i = 0; i < (int)this.linesCount.Value; i++)
+            {
                 this.artificialBaseMethodGrid.Rows[i].HeaderCell.Value = String.Concat("x", (i + 1 + (int)this.variableCount.Value).ToString());
-
+                tempVars.Add(this.artificialBaseMethodGrid.Rows[i].HeaderCell.Value.ToString());
+            }
             // Заполнение матрицы коэфициентов
             for (int i = 0; i < (int)this.linesCount.Value; i++)
                 for (int j = 0; j < (int)this.variableCount.Value+1; j++)
@@ -169,7 +175,7 @@ namespace LinearProgrammingTask
             }
 
             // Получение таблицы в которой остались переменные из начальной задачи(тут начинается цикл)
-
+            int iter = 1;
             // Нахождение всех возможных опорных элементов
 
             List<Point> supEl = suportElements(0);// Нашли все опорные элементы (в самой первой таблице)
@@ -178,8 +184,45 @@ namespace LinearProgrammingTask
                     if(supEl.Contains(new Point(j,i)))
                         this.artificialBaseMethodGrid[j,i].Style.BackColor = Color.FromArgb(255, 0, 255, 0);// Закрашивание ячейки с опорным элементом
 
+            Point mainSupElement = mainSupEl(0, tempVars);
             int startRow = (int)this.linesCount.Value + 2;// Строка, с которой будет начинаться каждая новая таблица
             this.artificialBaseMethodGrid.Rows[startRow].HeaderCell.Value="x(1)";
+            //горизонталь
+            for (int i = 0, columnVarNumber = i + 1; i < (int)this.variableCount.Value-1; i++, columnVarNumber++)
+            {
+                if (i == mainSupElement.X)
+                {
+                    this.artificialBaseMethodGrid[i,startRow].Value = String.Concat("x", (columnVarNumber+1).ToString());
+                    columnVarNumber++;
+                }
+                else
+                    this.artificialBaseMethodGrid[i, startRow].Value = String.Concat("x", (columnVarNumber).ToString());
+            }
+            //вертикаль
+            for (int i = startRow+1; i < startRow+1+(int)this.linesCount.Value; i++)
+            {
+                if ((i - startRow - 1) == mainSupElement.Y)
+                {
+                    this.artificialBaseMethodGrid.Rows[i].HeaderCell.Value = this.artificialBaseMethodGrid.Columns[mainSupElement.X].HeaderText;
+                }
+                else
+                    this.artificialBaseMethodGrid.Rows[i].HeaderCell.Value = tempVars[i-startRow-1];
+            }
+
+            // заполнение таблицы
+            try
+            {
+                for (int i = 0, columnVarNumber = i; i < (int)variableCount.Value + 1 - iter; i++, columnVarNumber++)
+                {
+                    if (i == mainSupElement.X)
+                        columnVarNumber++;
+                    this.artificialBaseMethodGrid[i, mainSupElement.Y + startRow + 1].Value = (Fraction.ToFraction(this.artificialBaseMethodGrid[columnVarNumber, mainSupElement.Y].Value.ToString()) * (1 / Fraction.ToFraction(this.artificialBaseMethodGrid[mainSupElement.X, mainSupElement.Y].Value.ToString()))).ToString();
+                }
+            }
+            catch (InvalidCastException)
+            {
+                MessageBox.Show("saD");
+            }
         }
 
         private List<Point> suportElements(int startRow)
@@ -208,6 +251,26 @@ namespace LinearProgrammingTask
             }
             return supElements;
         }// Поиск всех возможных опорных элементов
+
+        private Point mainSupEl(int startRow, List<String> tempVars)
+        {
+            for (int i = startRow; i < startRow+(int)this.linesCount.Value; i++)
+            {
+                for (int j = 0; j < (int)this.variableCount.Value; j++)
+                {
+                    // Беру первый попавшийся опорный элемент
+                    if (this.artificialBaseMethodGrid[j, i].Style.BackColor == Color.FromArgb(255, 0, 255, 0) &&
+                        tempVars.Contains(this.artificialBaseMethodGrid.Rows[i].HeaderCell.Value.ToString()))
+                    {
+                        this.artificialBaseMethodGrid[j, i].Style.BackColor = Color.FromArgb(255, 255, 0, 255);
+                        return new Point(j, i);
+                    }
+                   
+                }
+            }
+            // Пока хз
+            return new Point(0,0);
+        }// Выбор главного опорного элемента
 
         private void MenuItemSaveAs_Click(object sender, EventArgs e)
         {

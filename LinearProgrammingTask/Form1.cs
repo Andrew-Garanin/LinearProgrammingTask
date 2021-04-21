@@ -175,60 +175,90 @@ namespace LinearProgrammingTask
             }
 
             // Получение таблицы в которой остались переменные из начальной задачи(тут начинается цикл)
+
             int iter = 1;
-            // Нахождение всех возможных опорных элементов
-
-            List<Point> supEl = suportElements(0);// Нашли все опорные элементы (в самой первой таблице)
-            for (int i = 0; i < (int)this.linesCount.Value; i++)
-                for(int j = 0; j < (int)this.variableCount.Value; j++)
-                    if(supEl.Contains(new Point(j,i)))
-                        this.artificialBaseMethodGrid[j,i].Style.BackColor = Color.FromArgb(255, 0, 255, 0);// Закрашивание ячейки с опорным элементом
-
-            Point mainSupElement = mainSupEl(0, tempVars);
-            int startRow = (int)this.linesCount.Value + 2;// Строка, с которой будет начинаться каждая новая таблица
-            this.artificialBaseMethodGrid.Rows[startRow].HeaderCell.Value="x(1)";
-            //горизонталь
-            for (int i = 0, columnVarNumber = i + 1; i < (int)this.variableCount.Value-1; i++, columnVarNumber++)
+            int startRow = 0;
+            while (!IsEnd(startRow,iter))
             {
-                if (i == mainSupElement.X)
+                // Нахождение всех возможных опорных элементов
+                if (iter != 1)
+                    startRow++;
+                List<Point> supEl = suportElements(startRow,iter);// Нашли все опорные элементы
+
+                for (int i = startRow; i < startRow + (int)this.linesCount.Value; i++)
+                    for (int j = 0; j < (int)this.variableCount.Value-iter+1; j++)
+                        if (supEl.Contains(new Point(j, i)))
+                            this.artificialBaseMethodGrid[j, i].Style.BackColor = Color.FromArgb(255, 0, 255, 0);// Закрашивание ячейки с опорным элементом
+
+                Point mainSupElement = mainSupEl(startRow, tempVars);
+
+                startRow += (int)this.linesCount.Value + 2;// Строка, с которой будет начинаться каждая новая таблица
+                this.artificialBaseMethodGrid.Rows[startRow].HeaderCell.Value = "x(1)";
+
+                //горизонталь (Утверждено нахой!!)
+                for (int i = 0, columnVarNumber = i ; i < (int)this.variableCount.Value - 1*iter; i++, columnVarNumber++)
                 {
-                    this.artificialBaseMethodGrid[i,startRow].Value = String.Concat("x", (columnVarNumber+1).ToString());
-                    columnVarNumber++;
+                    if (i == mainSupElement.X)
+                    {
+                        if (startRow - ((int)this.linesCount.Value + 3) < 0)
+                            this.artificialBaseMethodGrid[i, startRow].Value = this.artificialBaseMethodGrid.Columns[columnVarNumber + 1].HeaderText;
+                        else
+                            this.artificialBaseMethodGrid[i, startRow].Value = this.artificialBaseMethodGrid[columnVarNumber + 1, startRow - ((int)this.linesCount.Value + 3)].Value;  //String.Concat("x", (columnVarNumber + 1).ToString());
+                        columnVarNumber++;
+                    }
+                    else
+                    {
+                        if(startRow - ((int)this.linesCount.Value + 3) < 0)
+                            this.artificialBaseMethodGrid[i, startRow].Value = this.artificialBaseMethodGrid.Columns[columnVarNumber].HeaderText;
+                        else
+                            this.artificialBaseMethodGrid[i, startRow].Value = this.artificialBaseMethodGrid[columnVarNumber, startRow - ((int)this.linesCount.Value + 3)].Value;
+                    }
                 }
-                else
-                    this.artificialBaseMethodGrid[i, startRow].Value = String.Concat("x", (columnVarNumber).ToString());
-            }
-            //вертикаль
-            for (int i = startRow+1; i < startRow+1+(int)this.linesCount.Value; i++)
-            {
-                if ((i - startRow - 1) == mainSupElement.Y)
+                //вертикаль (Утверждено нахой!!)
+                for (int i = startRow + 1; i < startRow + 1 + (int)this.linesCount.Value; i++)
                 {
-                    this.artificialBaseMethodGrid.Rows[i].HeaderCell.Value = this.artificialBaseMethodGrid.Columns[mainSupElement.X].HeaderText;
+                    if ((i - ((int)this.linesCount.Value + 3)) == mainSupElement.Y)
+                    {
+                        if (startRow - ((int)this.linesCount.Value + 3) < 0)
+                            this.artificialBaseMethodGrid.Rows[i].HeaderCell.Value = this.artificialBaseMethodGrid.Columns[mainSupElement.X].HeaderText;
+                        else
+                            this.artificialBaseMethodGrid.Rows[i].HeaderCell.Value = this.artificialBaseMethodGrid[mainSupElement.X, startRow - ((int)this.linesCount.Value + 3)].Value;
+                    }
+                    else
+                        this.artificialBaseMethodGrid.Rows[i].HeaderCell.Value = this.artificialBaseMethodGrid.Rows[i- ((int)this.linesCount.Value + 3)].HeaderCell.Value;
                 }
-                else
-                    this.artificialBaseMethodGrid.Rows[i].HeaderCell.Value = tempVars[i-startRow-1];
-            }
 
-            // заполнение таблицы
-            try
-            {
+                // заполнение таблицы
+                // Заполнение строки, которая в предыдущей таблице содержала опорный элемент (Утверждено нахой!!)
                 for (int i = 0, columnVarNumber = i; i < (int)variableCount.Value + 1 - iter; i++, columnVarNumber++)
                 {
                     if (i == mainSupElement.X)
                         columnVarNumber++;
-                    this.artificialBaseMethodGrid[i, mainSupElement.Y + startRow + 1].Value = (Fraction.ToFraction(this.artificialBaseMethodGrid[columnVarNumber, mainSupElement.Y].Value.ToString()) * (1 / Fraction.ToFraction(this.artificialBaseMethodGrid[mainSupElement.X, mainSupElement.Y].Value.ToString()))).ToString();
+                    this.artificialBaseMethodGrid[i, mainSupElement.Y + (int)this.linesCount.Value + 3].Value = (Fraction.ToFraction(this.artificialBaseMethodGrid[columnVarNumber, mainSupElement.Y].Value.ToString()) * (1 / Fraction.ToFraction(this.artificialBaseMethodGrid[mainSupElement.X, mainSupElement.Y].Value.ToString()))).ToString();
                 }
-            }
-            catch (InvalidCastException)
-            {
-                MessageBox.Show("saD");
+
+                // заполнение всех остальных строк (Утверждено нахой!!!!!)
+                for (int i = startRow + 1; i < startRow + 1 + (int)linesCount.Value + 1; i++)
+                {
+                    if (i - ((int)this.linesCount.Value + 3) == mainSupElement.Y)
+                        continue;
+                    for (int j = 0, columnVarNumber = j; j < (int)variableCount.Value + 1 - iter; j++, columnVarNumber++)
+                    {
+                        if (j == mainSupElement.X)
+                            columnVarNumber++;
+                        this.artificialBaseMethodGrid[j, i].Value = (Fraction.ToFraction(this.artificialBaseMethodGrid[columnVarNumber, i - ((int)this.linesCount.Value + 3)].Value.ToString()) - Fraction.ToFraction(this.artificialBaseMethodGrid[mainSupElement.X, i - ((int)this.linesCount.Value + 3)].Value.ToString()) * Fraction.ToFraction(this.artificialBaseMethodGrid[j, mainSupElement.Y + ((int)this.linesCount.Value + 3)].Value.ToString())).ToString();
+                    }
+                }
+                iter++;
             }
         }
 
-        private List<Point> suportElements(int startRow)
+        private List<Point> suportElements(int startRow,int iter)
         {
+            //if (iter != 1)
+            //    startRow++;
             List<Point> supElements = new List<Point>();
-            for(int i=0;i<(int)this.variableCount.Value;i++)
+            for(int i=0;i<(int)this.variableCount.Value - iter + 1; i++)
             {
                 if(Fraction.ToFraction(this.artificialBaseMethodGrid[i,startRow+(int)this.linesCount.Value].Value.ToString())<0)
                 {
@@ -238,14 +268,14 @@ namespace LinearProgrammingTask
                     {
                         if (Fraction.ToFraction(this.artificialBaseMethodGrid[i, j].Value.ToString()) > 0)
                         {
-                            if (Fraction.ToFraction(this.artificialBaseMethodGrid[(int)this.variableCount.Value, j].Value.ToString()) / Fraction.ToFraction(this.artificialBaseMethodGrid[i, j].Value.ToString()) < min)
-                                min = Fraction.ToFraction(this.artificialBaseMethodGrid[(int)this.variableCount.Value, j].Value.ToString()) / Fraction.ToFraction(this.artificialBaseMethodGrid[i, j].Value.ToString());
+                            if (Fraction.ToFraction(this.artificialBaseMethodGrid[(int)this.variableCount.Value-iter+1, j].Value.ToString()) / Fraction.ToFraction(this.artificialBaseMethodGrid[i, j].Value.ToString()) < min)
+                                min = Fraction.ToFraction(this.artificialBaseMethodGrid[(int)this.variableCount.Value-iter+1, j].Value.ToString()) / Fraction.ToFraction(this.artificialBaseMethodGrid[i, j].Value.ToString());
                         }
                     }
 
                     // Записываем все возможные элементы в столбце
                     for (int j = startRow; j < startRow + (int)this.linesCount.Value; j++)
-                        if (Fraction.ToFraction(this.artificialBaseMethodGrid[i, j].Value.ToString())!=0 && Fraction.ToFraction(this.artificialBaseMethodGrid[(int)this.variableCount.Value, j].Value.ToString()) / Fraction.ToFraction(this.artificialBaseMethodGrid[i, j].Value.ToString()) == min)
+                        if (Fraction.ToFraction(this.artificialBaseMethodGrid[i, j].Value.ToString())!=0 && Fraction.ToFraction(this.artificialBaseMethodGrid[(int)this.variableCount.Value - iter + 1, j].Value.ToString()) / Fraction.ToFraction(this.artificialBaseMethodGrid[i, j].Value.ToString()) == min)
                             supElements.Add(new Point(i,j));
                 }
             }
@@ -272,6 +302,14 @@ namespace LinearProgrammingTask
             return new Point(0,0);
         }// Выбор главного опорного элемента
 
+        private bool IsEnd(int startRow, int iter)
+        {
+            if (iter != 1)
+                startRow++;
+            if (Fraction.ToFraction(this.artificialBaseMethodGrid[(int)this.variableCount.Value -iter+1, startRow + (int)this.linesCount.Value].Value.ToString()) == 0)
+                return true;
+            return false;
+        }
         private void MenuItemSaveAs_Click(object sender, EventArgs e)
         {
             /*

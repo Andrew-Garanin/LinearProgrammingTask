@@ -51,15 +51,19 @@ namespace LinearProgrammingTask
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.graphPictureControl = new System.Windows.Forms.PictureBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.artificialBaseMethodGrid = new System.Windows.Forms.DataGridView();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.Menu = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItemSaveAs = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItemOpen = new System.Windows.Forms.ToolStripMenuItem();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.simplexMethodGrid = new System.Windows.Forms.DataGridView();
+            this.label11 = new System.Windows.Forms.Label();
+            this.artificialBaseLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.linesGrid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.variableCount)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.linesCount)).BeginInit();
@@ -71,6 +75,7 @@ namespace LinearProgrammingTask
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.artificialBaseMethodGrid)).BeginInit();
             this.menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.simplexMethodGrid)).BeginInit();
             this.SuspendLayout();
             // 
             // linesGrid
@@ -137,7 +142,7 @@ namespace LinearProgrammingTask
             this.tabControl.Location = new System.Drawing.Point(12, 45);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(858, 504);
+            this.tabControl.Size = new System.Drawing.Size(858, 529);
             this.tabControl.TabIndex = 4;
             // 
             // tabPage1
@@ -320,7 +325,7 @@ namespace LinearProgrammingTask
             this.tabPage2.Location = new System.Drawing.Point(4, 25);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(850, 475);
+            this.tabPage2.Size = new System.Drawing.Size(850, 500);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Графический метод";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -338,6 +343,10 @@ namespace LinearProgrammingTask
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.artificialBaseLabel);
+            this.tabPage3.Controls.Add(this.label11);
+            this.tabPage3.Controls.Add(this.simplexMethodGrid);
+            this.tabPage3.Controls.Add(this.label10);
             this.tabPage3.Controls.Add(this.label9);
             this.tabPage3.Controls.Add(this.label8);
             this.tabPage3.Controls.Add(this.panel2);
@@ -345,22 +354,56 @@ namespace LinearProgrammingTask
             this.tabPage3.Controls.Add(this.artificialBaseMethodGrid);
             this.tabPage3.Location = new System.Drawing.Point(4, 25);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(850, 475);
+            this.tabPage3.Size = new System.Drawing.Size(850, 500);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Симплекс метод";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(59, 465);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(205, 17);
+            this.label9.TabIndex = 3;
+            this.label9.Text = "Возможный опорный элемент";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(59, 437);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(197, 17);
+            this.label8.TabIndex = 3;
+            this.label8.Text = "Выбранный опорный элеент";
+            // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.Color.Lime;
+            this.panel2.Location = new System.Drawing.Point(15, 461);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(21, 21);
+            this.panel2.TabIndex = 2;
+            // 
+            // panel1
+            // 
+            this.panel1.BackColor = System.Drawing.Color.Magenta;
+            this.panel1.Location = new System.Drawing.Point(15, 433);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(21, 21);
+            this.panel1.TabIndex = 1;
             // 
             // artificialBaseMethodGrid
             // 
             this.artificialBaseMethodGrid.AllowUserToAddRows = false;
             this.artificialBaseMethodGrid.AllowUserToDeleteRows = false;
             this.artificialBaseMethodGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.artificialBaseMethodGrid.Location = new System.Drawing.Point(3, 3);
+            this.artificialBaseMethodGrid.Location = new System.Drawing.Point(15, 40);
             this.artificialBaseMethodGrid.Name = "artificialBaseMethodGrid";
             this.artificialBaseMethodGrid.ReadOnly = true;
             this.artificialBaseMethodGrid.RowHeadersWidth = 70;
             this.artificialBaseMethodGrid.RowTemplate.Height = 25;
-            this.artificialBaseMethodGrid.Size = new System.Drawing.Size(844, 379);
+            this.artificialBaseMethodGrid.Size = new System.Drawing.Size(515, 379);
             this.artificialBaseMethodGrid.TabIndex = 0;
             // 
             // menuStrip1
@@ -397,44 +440,46 @@ namespace LinearProgrammingTask
             this.MenuItemOpen.Text = "Открыть...";
             this.MenuItemOpen.Click += new System.EventHandler(this.MenuItemOpen_Click);
             // 
-            // panel1
+            // label10
             // 
-            this.panel1.BackColor = System.Drawing.Color.Magenta;
-            this.panel1.Location = new System.Drawing.Point(593, 395);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(21, 21);
-            this.panel1.TabIndex = 1;
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(22, 11);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(206, 17);
+            this.label10.TabIndex = 4;
+            this.label10.Text = "Метод искусственного базиса";
             // 
-            // panel2
+            // simplexMethodGrid
             // 
-            this.panel2.BackColor = System.Drawing.Color.Lime;
-            this.panel2.Location = new System.Drawing.Point(593, 423);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(21, 21);
-            this.panel2.TabIndex = 2;
+            this.simplexMethodGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.simplexMethodGrid.Location = new System.Drawing.Point(545, 40);
+            this.simplexMethodGrid.Name = "simplexMethodGrid";
+            this.simplexMethodGrid.RowHeadersWidth = 51;
+            this.simplexMethodGrid.RowTemplate.Height = 24;
+            this.simplexMethodGrid.Size = new System.Drawing.Size(292, 379);
+            this.simplexMethodGrid.TabIndex = 5;
             // 
-            // label8
+            // label11
             // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(637, 399);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(197, 17);
-            this.label8.TabIndex = 3;
-            this.label8.Text = "Выбранный опорный элеент";
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(564, 11);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(116, 17);
+            this.label11.TabIndex = 6;
+            this.label11.Text = "Симплекс метод";
             // 
-            // label9
+            // artificialBaseLabel
             // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(637, 427);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(205, 17);
-            this.label9.TabIndex = 3;
-            this.label9.Text = "Возможный опорный элемент";
+            this.artificialBaseLabel.AutoSize = true;
+            this.artificialBaseLabel.Location = new System.Drawing.Point(353, 440);
+            this.artificialBaseLabel.Name = "artificialBaseLabel";
+            this.artificialBaseLabel.Size = new System.Drawing.Size(0, 17);
+            this.artificialBaseLabel.TabIndex = 7;
             // 
             // Form1
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(882, 561);
+            this.ClientSize = new System.Drawing.Size(882, 586);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.menuStrip1);
             this.Name = "Form1";
@@ -453,6 +498,7 @@ namespace LinearProgrammingTask
             ((System.ComponentModel.ISupportInitialize)(this.artificialBaseMethodGrid)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.simplexMethodGrid)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -491,6 +537,10 @@ namespace LinearProgrammingTask
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.DataGridView simplexMethodGrid;
+        private System.Windows.Forms.Label artificialBaseLabel;
     }
 }
 

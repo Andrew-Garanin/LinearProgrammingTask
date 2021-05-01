@@ -13,7 +13,8 @@ namespace LinearProgrammingTask
         public int iter = 1;
         public int startRow = 0;
         List<String> tempVars = new List<String>();// Искуственно введенные переменные
-
+        List<Point> supEl = new List<Point>();
+        int countTables = 1;
         public Fraction[,] lines = new Fraction[20, 20];// Массив для ограничений
         public Form1()
         {
@@ -120,7 +121,13 @@ namespace LinearProgrammingTask
 
         private void btn_OK_Click(object sender, EventArgs e)// Считывание таблицы в массив и собственно решение задачи ЛП
         {
-            
+            //MessageBox.Show(Fraction.ToFraction("0.113333333333333333").ToString());
+            //MessageBox.Show(Fraction.ToFraction("2").ToString());
+            //MessageBox.Show(Fraction.ToFraction("-0.333333").ToString());
+            //MessageBox.Show(Fraction.ToFraction("3").ToString());
+            //MessageBox.Show(Fraction.ToFraction("1/3").ToString());
+            //MessageBox.Show(Fraction.ToFraction("-3").ToString());
+            //MessageBox.Show(Fraction.ToFraction("-3").ToString());
             for (int i = 0; i < (int)this.variableCount.Value+1; i++)
             for (int j = 0; j < (int)this.linesCount.Value; j++)
                 lines[j, i] = Fraction.ToFraction(linesGrid[i, j].Value.ToString());
@@ -181,8 +188,15 @@ namespace LinearProgrammingTask
                 this.artificialBaseMethodGrid[i, (int)this.linesCount.Value].Value = tmp.ToString();
             }
             
-            List<Point> supEl = suportElements(this.artificialBaseMethodGrid);// Нашли все опорные элементы
+            supEl = suportElements(this.artificialBaseMethodGrid);// Нашли все опорные элементы
             SetColorsOnSupElements(supEl, this.artificialBaseMethodGrid);// Раскрасили все опорные элементы
+
+            if (this.fractionView.Text == "Десятичные")
+            {
+                for (int i = 0; i < (int)this.variableCount.Value+1; i++)
+                    for (int j = 0; j < (int)this.linesCount.Value+1; j++)
+                        this.artificialBaseMethodGrid[i, j].Value = Fraction.ToFraction(this.artificialBaseMethodGrid[i, j].Value.ToString()).ToDouble();
+            }
 
             if (this.solutionMode.Text == "Пошаговый")
                 return;
@@ -191,8 +205,6 @@ namespace LinearProgrammingTask
                 // Получение таблицы в которой останутся только переменные из начальной задачи(в цикле)
                 while (!IsEndArtificialBaseMethod())
                 {
-                    // Нахождение и закрашивание всех возможных опорных элементов
-
                     Point mainSupElement = mainSupEl(this.artificialBaseMethodGrid);// Нахождение и закрашивание главного порного эл-та
 
                     startRow += (int)this.linesCount.Value + 3;// Строка, с которой будет начинаться каждая новая таблица
@@ -203,7 +215,13 @@ namespace LinearProgrammingTask
                     supEl = suportElements( this.artificialBaseMethodGrid);// Нашли все опорные элементы
 
                     SetColorsOnSupElements(supEl, this.artificialBaseMethodGrid);
-                    
+
+                    if (this.fractionView.Text == "Десятичные")
+                    {
+                        for (int i = 0; i < (int)variableCount.Value + 2 - iter; i++)
+                            for (int j = startRow; j < startRow+(int)this.linesCount.Value+1; j++)
+                                this.artificialBaseMethodGrid[i, j].Value = Fraction.ToFraction(this.artificialBaseMethodGrid[i, j].Value.ToString()).ToDouble();
+                    }
                 }
 
                 bool isIdleStep = false;
@@ -215,12 +233,16 @@ namespace LinearProgrammingTask
                     }
                 // холостой шаг(если нужен)
                 if (isIdleStep)
-                {
                     IdleStep(supEl);
-                }
 
-                // Формирование искусственного базиса
-                ArtificialBasisPrinter();
+                if (this.fractionView.Text == "Десятичные")
+                {
+                    for (int i = 0; i < (int)variableCount.Value + 2 - iter; i++)
+                        for (int j = startRow; j < startRow + (int)this.linesCount.Value+1; j++)
+                            this.artificialBaseMethodGrid[i, j].Value = Fraction.ToFraction(this.artificialBaseMethodGrid[i, j].Value.ToString()).ToDouble();
+                }
+                
+                ArtificialBasisPrinter();// Формирование искусственного базиса
 
                 // СИМПЛЕКС МЕТОД
                 this.tabControl.SelectedTab = this.tabPage3;// Переключение на вкладку симплекс метода
@@ -261,27 +283,34 @@ namespace LinearProgrammingTask
                     for (int j = 0; j < (int)this.linesCount.Value; j++)
                     {
                         int var = this.simplexMethodGrid.Rows[j].HeaderCell.Value.ToString()[1] - '0';
-                        Fraction koef = Fraction.ToFraction(this.targetFuncGrid[var - 1, 0].Value.ToString());
+                        Fraction koef = (this.optimizeTask.Text == "Min" ? Fraction.ToFraction(this.targetFuncGrid[var - 1, 0].Value.ToString()) : -1*Fraction.ToFraction(this.targetFuncGrid[var - 1, 0].Value.ToString())) ;
                         targetKoef += -1 * Fraction.ToFraction(this.simplexMethodGrid[i, j].Value.ToString()) * koef;
                     }
 
                     if (this.simplexMethodGrid.Columns[i].HeaderCell.Value.ToString() != "")
                     {
                         int var1 = this.simplexMethodGrid.Columns[i].HeaderCell.Value.ToString()[1] - '0';
-                        this.simplexMethodGrid[i, (int)this.linesCount.Value].Value = (targetKoef + Fraction.ToFraction(this.targetFuncGrid[var1 - 1, 0].Value.ToString())).ToString();
+                        this.simplexMethodGrid[i, (int)this.linesCount.Value].Value = (targetKoef + 
+                            (this.optimizeTask.Text == "Min" ? Fraction.ToFraction(this.targetFuncGrid[var1 - 1, 0].Value.ToString()) : -1*Fraction.ToFraction(this.targetFuncGrid[var1 - 1, 0].Value.ToString()))).ToString();
                     }
                     else
-                        this.simplexMethodGrid[i, (int)this.linesCount.Value].Value = (targetKoef + Fraction.ToFraction(this.targetFuncGrid[(int)this.variableCount.Value, 0].Value.ToString())).ToString();
+                        this.simplexMethodGrid[i, (int)this.linesCount.Value].Value = (targetKoef + 
+                            (this.optimizeTask.Text == "Min" ? Fraction.ToFraction(this.targetFuncGrid[(int)this.variableCount.Value, 0].Value.ToString()) : -1 * Fraction.ToFraction(this.targetFuncGrid[(int)this.variableCount.Value, 0].Value.ToString()))).ToString();
                 }
+
+                if (this.fractionView.Text == "Десятичные")
+                {
+                    for (int i = 0; i < (int)variableCount.Value - (int)linesCount.Value+1; i++)
+                        for (int j =0; j <(int)this.linesCount.Value+1; j++)
+                            this.simplexMethodGrid[i, j].Value = Fraction.ToFraction(this.simplexMethodGrid[i, j].Value.ToString()).ToDouble();
+                }
+
                 startRow = 0;
                 iter = 1;
                 
                 supEl = suportElements(this.simplexMethodGrid);// Нашли все опорные элементы
                 SetColorsOnSupElements(supEl, this.simplexMethodGrid);// Раскрасили все опорные элементы
                 //Собственно, сам симплекс метод
-
-                /************************** До этого момента вроде все норм************************************/
-
                 SimplexMethod(this.simplexMethodGrid);
             }
         }
@@ -501,7 +530,6 @@ namespace LinearProgrammingTask
 
         private void SimplexMethod(DataGridView dataGrid)
         {
-            int countTables = 1;
             while (!IsEndSimplexMethod())
             {
                 tempVars = null;
@@ -514,44 +542,68 @@ namespace LinearProgrammingTask
                 countTables++;
                 List<Point> supEl = suportElements(this.simplexMethodGrid);// Нашли все опорные элементы
                 SetColorsOnSupElements(supEl, this.simplexMethodGrid);
+
+
+                if (this.fractionView.Text == "Десятичные")
+                {
+                    for (int i = 0; i < (int)variableCount.Value - (int)linesCount.Value+1; i++)
+                        for (int j = startRow; j < startRow + (int)this.linesCount.Value+1; j++)
+                            this.simplexMethodGrid[i, j].Value = Fraction.ToFraction(this.simplexMethodGrid[i, j].Value.ToString()).ToDouble();
+                }
             }
 
-            //// Вывод результатов
-            //Fraction[] answerPoint = new Fraction[(int)this.variableCount.Value];
-            //for (int i = 0; i < (int)this.variableCount.Value - (int)this.linesCount.Value; i++)
-            //{
-            //    if (startRow != 0)
-            //    {
-            //        int freeVar = this.simplexMethodGrid[i, startRow].Value.ToString()[1] - '0';
-            //        answerPoint[freeVar - 1] = 0;
-            //    }
-            //    else
-            //    {
-            //        int freeVar = this.simplexMethodGrid.Columns[i].HeaderText.ToString()[1] - '0';
-            //        answerPoint[freeVar - 1] = 0;
-            //    }
+            // Вывод результатов
+            Fraction[] answerPoint = new Fraction[(int)this.variableCount.Value];
+            for (int i = 0; i < (int)this.variableCount.Value - (int)this.linesCount.Value; i++)
+            {
+                if (startRow != 0)
+                {
+                    int freeVar = this.simplexMethodGrid[i, startRow-1].Value.ToString()[1] - '0';
+                    answerPoint[freeVar - 1] = 0;
+                }
+                else
+                {
+                    int freeVar = this.simplexMethodGrid.Columns[i].HeaderText.ToString()[1] - '0';
+                    answerPoint[freeVar - 1] = 0;
+                }
 
-            //}
+            }
 
-            //for (int i = (startRow == 0 ? startRow : startRow + 1); i < (startRow == 0 ? startRow : startRow + 1) + (int)this.linesCount.Value; i++)
-            //{
-            //    int freeVar = this.simplexMethodGrid.Rows[i].HeaderCell.Value.ToString()[1] - '0';
-            //    answerPoint[freeVar - 1] = Fraction.ToFraction(this.simplexMethodGrid[(int)variableCount.Value - (int)this.linesCount.Value, i].Value.ToString());
-            //}
+            for (int i = startRow; i < startRow + (int)this.linesCount.Value; i++)
+            {
+                int freeVar = this.simplexMethodGrid.Rows[i].HeaderCell.Value.ToString()[1] - '0';
+                answerPoint[freeVar - 1] = Fraction.ToFraction(this.simplexMethodGrid[(int)variableCount.Value - (int)this.linesCount.Value, i].Value.ToString());
+            }
 
-            //this.answerLabel.Text = "f*(";
-            //for (int i = 0; i < (int)this.variableCount.Value; i++)
-            //{
-            //    this.answerLabel.Text = String.Concat(this.answerLabel.Text, answerPoint[i].ToString());
-            //    this.answerLabel.Text = String.Concat(this.answerLabel.Text, ';');
-            //}
-            //this.answerLabel.Text = this.answerLabel.Text.Remove(this.answerLabel.Text.Length - 1);
-            //this.answerLabel.Text = String.Concat(this.answerLabel.Text, ")=", (Fraction.ToFraction(this.simplexMethodGrid[(int)variableCount.Value - (int)this.linesCount.Value, (startRow == 0 ? startRow : startRow + 1) + (int)this.linesCount.Value].Value.ToString()) * -1).ToString());
+            this.answerLabel.Text = "f*(";
+            for (int i = 0; i < (int)this.variableCount.Value; i++)
+            {
+                if (this.fractionView.Text == "Десятичные")
+                    this.answerLabel.Text = String.Concat(this.answerLabel.Text, answerPoint[i].ToDouble().ToString());
+                else
+                    this.answerLabel.Text = String.Concat(this.answerLabel.Text, answerPoint[i].ToString());
+                this.answerLabel.Text = String.Concat(this.answerLabel.Text, ';');
+            }
+            this.answerLabel.Text = this.answerLabel.Text.Remove(this.answerLabel.Text.Length - 1);
+            if (this.optimizeTask.Text == "Min")
+            {
+                if (this.fractionView.Text == "Десятичные")
+                    this.answerLabel.Text = String.Concat(this.answerLabel.Text, ")=", (Fraction.ToFraction(this.simplexMethodGrid[(int)variableCount.Value - (int)this.linesCount.Value, startRow + (int)this.linesCount.Value].Value.ToString()) * -1).ToDouble().ToString());
+                else
+                    this.answerLabel.Text = String.Concat(this.answerLabel.Text, ")=", (Fraction.ToFraction(this.simplexMethodGrid[(int)variableCount.Value - (int)this.linesCount.Value, startRow + (int)this.linesCount.Value].Value.ToString()) * -1).ToString());
+            }
+            else
+            {
+                if (this.fractionView.Text == "Десятичные")
+                    this.answerLabel.Text = String.Concat(this.answerLabel.Text, ")=", Fraction.ToFraction(this.simplexMethodGrid[(int)variableCount.Value - (int)this.linesCount.Value, startRow + (int)this.linesCount.Value].Value.ToString()).ToDouble().ToString());
+                else
+                    this.answerLabel.Text = String.Concat(this.answerLabel.Text, ")=", (Fraction.ToFraction(this.simplexMethodGrid[(int)variableCount.Value - (int)this.linesCount.Value, startRow + (int)this.linesCount.Value].Value.ToString())).ToString());
+            }
+
         }
 
-        private void ArtificialBasisPrinter()
+        private void ArtificialBasisPrinter()// Формирование искусственного базиса
         {
-            // Формирование искусственного базиса
             Fraction[] artificialBasis = new Fraction[(int)this.variableCount.Value];
             for (int i = 0; i < (int)this.variableCount.Value + 1 - iter; i++)
             {
@@ -576,7 +628,11 @@ namespace LinearProgrammingTask
             this.artificialBaseLabel.Text = "Искуственный базис:(";
             for (int i = 0; i < (int)this.variableCount.Value; i++)
             {
-                this.artificialBaseLabel.Text = String.Concat(this.artificialBaseLabel.Text, artificialBasis[i].ToString());
+                if (this.fractionView.Text == "Десятичные")
+                    this.artificialBaseLabel.Text = String.Concat(this.artificialBaseLabel.Text, artificialBasis[i].ToDouble().ToString());
+                else
+                    this.artificialBaseLabel.Text = String.Concat(this.artificialBaseLabel.Text, artificialBasis[i].ToString());
+
                 this.artificialBaseLabel.Text = String.Concat(this.artificialBaseLabel.Text, ';');
             }
             this.artificialBaseLabel.Text = this.artificialBaseLabel.Text.Remove(this.artificialBaseLabel.Text.Length - 1);
@@ -585,8 +641,6 @@ namespace LinearProgrammingTask
 
         private bool IsEndArtificialBaseMethod()
         {
-            //if (iter != 1)
-            //    startRow++;
             if (Fraction.ToFraction(this.artificialBaseMethodGrid[(int)this.variableCount.Value -iter+1, startRow + (int)this.linesCount.Value].Value.ToString()) == 0)
                 return true;
             return false;
@@ -683,126 +737,67 @@ namespace LinearProgrammingTask
 
         private void stepForwardArtificial_Click(object sender, EventArgs e)
         {
-            if(!IsEndArtificialBaseMethod())
+            if (!IsEndArtificialBaseMethod())
             {
-                // Нахождение и закрашивание всех возможных опорных элементов
-                if (iter != 1)
-                    startRow++;
-                List<Point> supEl = suportElements( this.artificialBaseMethodGrid);// Нашли все опорные элементы
+                Point mainSupElement = mainSupEl(this.artificialBaseMethodGrid);// Нахождение и закрашивание главного порного эл-та
 
-                for (int i = startRow; i < startRow + (int)this.linesCount.Value; i++)
-                    for (int j = 0; j < (int)this.variableCount.Value - iter + 1; j++)
-                        if (supEl.Contains(new Point(j, i)))
-                            this.artificialBaseMethodGrid[j, i].Style.BackColor = Color.FromArgb(255, 0, 255, 0);// Закрашивание ячейки с опорным элементом
+                startRow += (int)this.linesCount.Value + 3;// Строка, с которой будет начинаться каждая новая таблица
+                this.artificialBaseMethodGrid.Rows[startRow - 1].HeaderCell.Value = String.Concat("x(", iter, ")");
 
-                Point mainSupElement = mainSupEl( this.artificialBaseMethodGrid);// Нахождение и закрашивание главного порного эл-та
-
-                startRow += (int)this.linesCount.Value + 2;// Строка, с которой будет начинаться каждая новая таблица
-                this.artificialBaseMethodGrid.Rows[startRow].HeaderCell.Value = String.Concat("x(", iter, ")");
-
-                SimplexStepArtificial( mainSupElement, this.artificialBaseMethodGrid);
+                SimplexStepArtificial(mainSupElement, this.artificialBaseMethodGrid);
                 iter++;
+                supEl = suportElements(this.artificialBaseMethodGrid);// Нашли все опорные элементы
+
+                SetColorsOnSupElements(supEl, this.artificialBaseMethodGrid);
             }
             else
             {
                 bool isIdleStep = false;
                 for (int i = 0; i < (int)variableCount.Value + 1 - iter; i++)
-                    if (Fraction.ToFraction(this.artificialBaseMethodGrid[i, startRow + (int)this.linesCount.Value + 1].Value.ToString()) != 0)
+                    if (Fraction.ToFraction(this.artificialBaseMethodGrid[i, startRow + (int)this.linesCount.Value].Value.ToString()) != 0)
                     {
                         isIdleStep = true;
                         break;
                     }
                 // холостой шаг(если нужен)
                 if (isIdleStep)
-                {
-                    //  Поиск номера строки, в которой стоит переменная от которой хотим избавиться
-                    int numOfExcessStr = -1;
-                    for (int i = startRow + 1; i < startRow + 1 + (int)this.linesCount.Value; i++)
-                        if (tempVars.Contains(this.artificialBaseMethodGrid.Rows[i].HeaderCell.Value.ToString()))
-                        {
-                            numOfExcessStr = i;
-                            break;
-                        }
-                    List<Point> supElements = new List<Point>();
-
-                    // Поиск и закрашивание всех возможных опорных элементов
-                    for (int i = 0; i < (int)variableCount.Value + 1 - iter; i++)
-                    {
-                        if (Fraction.ToFraction(this.artificialBaseMethodGrid[i, numOfExcessStr].Value.ToString()) != 0)
-                        {
-                            supElements.Add(new Point(i, numOfExcessStr));
-                            this.artificialBaseMethodGrid[i, numOfExcessStr].Style.BackColor = Color.FromArgb(255, 0, 255, 0);
-                        }
-                    }
-
-                    //Выбор и закрашивание главного опорного элемента(беру последний в списке опорных)
-                    Point mainSupElement = supElements[supElements.Count - 1];
-                    this.artificialBaseMethodGrid[mainSupElement.X, mainSupElement.Y].Style.BackColor = Color.FromArgb(255, 255, 0, 255);
-
-                    startRow += (int)this.linesCount.Value + 3;// Строка, начиная с которой, будет выводиться последняя таблица
-                    this.artificialBaseMethodGrid.Rows[startRow].HeaderCell.Value = "x(1)";
-                    SimplexStepArtificial( mainSupElement, this.artificialBaseMethodGrid);// Сам холостой шаг
-                    iter++;
-                }
+                    IdleStep(supEl);
 
                 // Формирование искусственного базиса
-                Fraction[] artificialBasis = new Fraction[(int)this.variableCount.Value];
-                for (int i = 0; i < (int)this.variableCount.Value + 1 - iter; i++)
-                {
-                    if (startRow != 0)
-                    {
-                        int freeVar = this.artificialBaseMethodGrid[i, startRow].Value.ToString()[1] - '0';
-                        artificialBasis[freeVar - 1] = 0;
-                    }
-                    else
-                    {
-                        int freeVar = this.artificialBaseMethodGrid.Columns[i].HeaderText.ToString()[1] - '0';
-                        artificialBasis[freeVar - 1] = 0;
-                    }
-
-                }
-
-                for (int i = (startRow == 0 ? startRow : startRow + 1); i < (startRow == 0 ? startRow : startRow + 1) + (int)this.linesCount.Value; i++)
-                {
-                    int freeVar = this.artificialBaseMethodGrid.Rows[i].HeaderCell.Value.ToString()[1] - '0';
-                    artificialBasis[freeVar - 1] = Fraction.ToFraction(this.artificialBaseMethodGrid[(int)variableCount.Value - iter + 1, i].Value.ToString());
-                }
-                this.artificialBaseLabel.Text = "Искуственный базис:(";
-                for (int i = 0; i < (int)this.variableCount.Value; i++)
-                {
-                    this.artificialBaseLabel.Text = String.Concat(this.artificialBaseLabel.Text, artificialBasis[i].ToString());
-                    this.artificialBaseLabel.Text = String.Concat(this.artificialBaseLabel.Text, ';');
-                }
-                this.artificialBaseLabel.Text = this.artificialBaseLabel.Text.Remove(this.artificialBaseLabel.Text.Length - 1);
-                this.artificialBaseLabel.Text = String.Concat(this.artificialBaseLabel.Text, ')');
-
-
+                ArtificialBasisPrinter();
 
                 // СИМПЛЕКС МЕТОД
+                this.stepForwardArtificial.Enabled = false;
                 this.tabControl.SelectedTab = this.tabPage3;// Переключение на вкладку симплекс метода
                 this.simplexMethodGrid.ColumnCount = 20;
                 this.simplexMethodGrid.RowCount = 100;
                 this.simplexMethodGrid.CurrentCell = null;// Чтоб в самом начале не была выбрана никакая ячейка
-                
+                // Отключение сортировки по столбцам
                 foreach (DataGridViewColumn column in this.simplexMethodGrid.Columns)
                 {
                     column.SortMode = DataGridViewColumnSortMode.NotSortable;
                 }
-                // Ебаная хуета другого выхода я не нашел(
+
+                // Установка ширины столбцов
                 foreach (DataGridViewColumn el in this.simplexMethodGrid.Columns)
                     el.Width = 70;
                 this.simplexMethodGrid.TopLeftHeaderCell.Value = "x(0)";
 
                 // Заполнение заголовков строк и слолбцов первой таблицы
                 for (int i = 0; i < (int)this.variableCount.Value - (int)this.linesCount.Value; i++)
-                    this.simplexMethodGrid.Columns[i].HeaderText = this.artificialBaseMethodGrid[i, startRow].Value.ToString();
-                for (int i = startRow + 1; i < startRow + 1 + (int)this.linesCount.Value; i++)
-                    this.simplexMethodGrid.Rows[i - (startRow + 1)].HeaderCell.Value = this.artificialBaseMethodGrid.Rows[i].HeaderCell.Value;
+                {
+                    if (startRow != 0)
+                        this.simplexMethodGrid.Columns[i].HeaderText = this.artificialBaseMethodGrid[i, startRow - 1].Value.ToString();
+                    else
+                        this.simplexMethodGrid.Columns[i].HeaderText = this.artificialBaseMethodGrid.Columns[i].HeaderText.ToString();
+                }
+                for (int i = startRow; i < startRow + (int)this.linesCount.Value; i++)
+                    this.simplexMethodGrid.Rows[i - startRow].HeaderCell.Value = this.artificialBaseMethodGrid.Rows[i].HeaderCell.Value;
 
                 // Запонение матрицы коэффициентов
                 for (int i = 0; i < (int)this.linesCount.Value; i++)
                     for (int j = 0; j < (int)this.variableCount.Value + 1 - (int)this.linesCount.Value; j++)
-                        this.simplexMethodGrid[j, i].Value = this.artificialBaseMethodGrid[j, i + startRow + 1].Value.ToString();
+                        this.simplexMethodGrid[j, i].Value = this.artificialBaseMethodGrid[j, i + startRow].Value.ToString();
 
                 //Вычисление коэф-ов целевой функции
                 for (int i = 0; i < (int)this.variableCount.Value + 1 - (int)this.linesCount.Value; i++)
@@ -823,9 +818,11 @@ namespace LinearProgrammingTask
                     else
                         this.simplexMethodGrid[i, (int)this.linesCount.Value].Value = (targetKoef + Fraction.ToFraction(this.targetFuncGrid[(int)this.variableCount.Value, 0].Value.ToString())).ToString();
                 }
-                this.stepForwardArtificial.Enabled = false;
-                iter = 1;
                 startRow = 0;
+                iter = 1;
+
+                supEl = suportElements(this.simplexMethodGrid);// Нашли все опорные элементы
+                SetColorsOnSupElements(supEl, this.simplexMethodGrid);// Раскрасили все опорные элементы
             }
         }
 
@@ -833,33 +830,27 @@ namespace LinearProgrammingTask
         {
             if (!IsEndSimplexMethod())
             {
-                // Нахождение и закрашивание всех возможных опорных элементов
-                if (iter != 1)
-                    startRow++;
-                List<Point> supEl = suportElements( this.simplexMethodGrid);// Нашли все опорные элементы
-
-                for (int i = startRow; i < startRow + (int)this.linesCount.Value; i++)
-                    for (int j = 0; j < (int)this.variableCount.Value - iter + 1; j++)
-                        if (supEl.Contains(new Point(j, i)))
-                            this.simplexMethodGrid[j, i].Style.BackColor = Color.FromArgb(255, 0, 255, 0);// Закрашивание ячейки с опорным элементом
-
+                tempVars = null;
                 Point mainSupElement = mainSupEl(this.simplexMethodGrid);// Нахождение и закрашивание главного порного эл-та
 
-                startRow += (int)this.linesCount.Value + 2;// Строка, с которой будет начинаться каждая новая таблица
-                this.simplexMethodGrid.Rows[startRow].HeaderCell.Value = String.Concat("x(", iter, ")");
+                startRow += (int)this.linesCount.Value + 3;// Строка, с которой будет начинаться каждая новая таблица
+                this.simplexMethodGrid.Rows[startRow - 1].HeaderCell.Value = String.Concat("x(", countTables, ")");
 
-                SimplexStep( mainSupElement, this.simplexMethodGrid);
-                iter++;
+                SimplexStep(mainSupElement, this.simplexMethodGrid);
+                countTables++;
+                List<Point> supEl = suportElements(this.simplexMethodGrid);// Нашли все опорные элементы
+                SetColorsOnSupElements(supEl, this.simplexMethodGrid);
             }
             else
             {
+                this.stepForwardSimplex.Enabled = false;
                 // Вывод результатов
                 Fraction[] answerPoint = new Fraction[(int)this.variableCount.Value];
                 for (int i = 0; i < (int)this.variableCount.Value - (int)this.linesCount.Value; i++)
                 {
                     if (startRow != 0)
                     {
-                        int freeVar = this.simplexMethodGrid[i, startRow].Value.ToString()[1] - '0';
+                        int freeVar = this.simplexMethodGrid[i, startRow - 1].Value.ToString()[1] - '0';
                         answerPoint[freeVar - 1] = 0;
                     }
                     else
@@ -870,7 +861,7 @@ namespace LinearProgrammingTask
 
                 }
 
-                for (int i = (startRow == 0 ? startRow : startRow + 1); i < (startRow == 0 ? startRow : startRow + 1) + (int)this.linesCount.Value; i++)
+                for (int i = startRow; i < startRow + (int)this.linesCount.Value; i++)
                 {
                     int freeVar = this.simplexMethodGrid.Rows[i].HeaderCell.Value.ToString()[1] - '0';
                     answerPoint[freeVar - 1] = Fraction.ToFraction(this.simplexMethodGrid[(int)variableCount.Value - (int)this.linesCount.Value, i].Value.ToString());
@@ -883,9 +874,83 @@ namespace LinearProgrammingTask
                     this.answerLabel.Text = String.Concat(this.answerLabel.Text, ';');
                 }
                 this.answerLabel.Text = this.answerLabel.Text.Remove(this.answerLabel.Text.Length - 1);
-                this.answerLabel.Text = String.Concat(this.answerLabel.Text, ")=", (Fraction.ToFraction(this.simplexMethodGrid[(int)variableCount.Value - (int)this.linesCount.Value, (startRow == 0 ? startRow : startRow + 1) + (int)this.linesCount.Value].Value.ToString()) * -1).ToString());
-                this.stepForwardSimplex.Enabled = false;
+                this.answerLabel.Text = String.Concat(this.answerLabel.Text, ")=", (Fraction.ToFraction(this.simplexMethodGrid[(int)variableCount.Value - (int)this.linesCount.Value, startRow + (int)this.linesCount.Value].Value.ToString()) * -1).ToString());
             }
         }
+
+        /*public static string ConvertToFraction(decimal value)
+        {
+            for (int i = 1; i < 100; i++)
+            {
+                decimal multipliedValue = value * i;
+                if (Math.Abs(Math.Round(multipliedValue) - multipliedValue) <= 0.00000001M)
+                    return Math.Round(multipliedValue).ToString() + "/" + i.ToString();
+            }
+            return value.ToString();
+        }*/
+
+        /*public Fraction RealToFraction(string strValue)
+        {
+            decimal value = Convert.ToDecimal(strValue);
+            decimal accuracy = 0.000000000000001M;
+
+            int sign = Math.Sign(value);
+
+            if (sign == -1)
+            {
+                value = Math.Abs(value);
+            }
+
+            // Accuracy is the maximum relative error; convert to absolute maxError
+            decimal maxError = (sign == 0 ? accuracy : value * accuracy);
+
+            int n = (int)Math.Floor(value);
+            value -= n;
+
+            if (value < maxError)
+            {
+                return new Fraction(sign * n, 1);
+            }
+
+            if (1 - maxError < value)
+            {
+                return new Fraction(sign * (n + 1), 1);
+            }
+
+            // The lower fraction is 0/1
+            int lower_n = 0;
+            int lower_d = 1;
+
+            // The upper fraction is 1/1
+            int upper_n = 1;
+            int upper_d = 1;
+
+            while (true)
+            {
+                // The middle fraction is (lower_n + upper_n) / (lower_d + upper_d)
+                int middle_n = lower_n + upper_n;
+                int middle_d = lower_d + upper_d;
+
+                if (middle_d * (value + maxError) < middle_n)
+                {
+                    // real + error < middle : middle is our new upper
+                    upper_n = middle_n;
+                    upper_d = middle_d;
+                }
+                else if (middle_n < (value - maxError) * middle_d)
+                {
+                    // middle < real - error : middle is our new lower
+                    lower_n = middle_n;
+                    lower_d = middle_d;
+                }
+                else
+                {
+                    // Middle is our best fraction
+                    return new Fraction((n * middle_d + middle_n) * sign, middle_d);
+                }
+            }
+        }*/
+
     }
+
 }

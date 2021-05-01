@@ -182,23 +182,84 @@ namespace Mehroz
 		/// </summary>
 		public static Fraction ToFraction(string strValue)
 		{
-			int i;
-			for (i=0;i<strValue.Length;i++)
-				if (strValue[i]=='/')
-					break;
-			
-			if (i==strValue.Length)		// if string is not in the form of a fraction
-				// then it is double or integer
-				return ( Convert.ToDouble(strValue));
-				//return ( ToFraction( Convert.ToDouble(strValue) ) );
-			
-			// else string is in the form of Numerator/Denominator
-			long iNumerator=Convert.ToInt64(strValue.Substring(0,i));
-			long iDenominator=Convert.ToInt64(strValue.Substring(i+1));
-			return new Fraction(iNumerator, iDenominator);
-		}
-		
-		
+            int j;
+            for (j = 0; j < strValue.Length; j++)
+                if (strValue[j] == '/')
+                    break;
+
+			long iNumerator;
+			long iDenominator;
+			// if string is not in the form of a fraction
+			// then it is double or integer
+			if (j == strValue.Length)
+			{
+				decimal value = Convert.ToDecimal(strValue);
+				decimal accuracy = 0.00000001M;
+
+				int sign = Math.Sign(value);
+
+				if (sign == -1)
+				{
+					value = Math.Abs(value);
+				}
+
+				// Accuracy is the maximum relative error; convert to absolute maxError
+				decimal maxError = (sign == 0 ? accuracy : value * accuracy);
+
+				int n = (int)Math.Floor(value);
+				value -= n;
+
+				if (value < maxError)
+				{
+					return new Fraction(sign * n, 1);
+				}
+
+				if (1 - maxError < value)
+				{
+					return new Fraction(sign * (n + 1), 1);
+				}
+
+				// The lower fraction is 0/1
+				int lower_n = 0;
+				int lower_d = 1;
+
+				// The upper fraction is 1/1
+				int upper_n = 1;
+				int upper_d = 1;
+
+				while (true)
+				{
+					// The middle fraction is (lower_n + upper_n) / (lower_d + upper_d)
+					int middle_n = lower_n + upper_n;
+					int middle_d = lower_d + upper_d;
+
+					if (middle_d * (value + maxError) < middle_n)
+					{
+						// real + error < middle : middle is our new upper
+						upper_n = middle_n;
+						upper_d = middle_d;
+					}
+					else if (middle_n < (value - maxError) * middle_d)
+					{
+						// middle < real - error : middle is our new lower
+						lower_n = middle_n;
+						lower_d = middle_d;
+					}
+					else
+					{
+						// Middle is our best fraction
+						return new Fraction((n * middle_d + middle_n) * sign, middle_d);
+					}
+				}
+			}
+
+            // else string is in the form of Numerator/Denominator
+            iNumerator = Convert.ToInt64(strValue.Substring(0, j));
+            iDenominator = Convert.ToInt64(strValue.Substring(j + 1));
+            return new Fraction(iNumerator, iDenominator);
+        }
+
+
 		/// <summary>
 		/// The function takes a floating point number as an argument 
 		/// and returns its corresponding reduced fraction

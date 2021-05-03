@@ -6,7 +6,6 @@
  * Time: 10:54 AM
  *
  */
-
 using System;
 
 namespace Mehroz
@@ -180,7 +179,7 @@ namespace Mehroz
 		/// the string can be an in the form of and integer, double or fraction.
 		/// e.g it can be like "123" or "123.321" or "123/456"
 		/// </summary>
-		public static Fraction ToFraction(string strValue)
+		public static Fraction ToFraction(string strValue)// ѕришлось немного переделать под себ€
 		{
             int j;
             for (j = 0; j < strValue.Length; j++)

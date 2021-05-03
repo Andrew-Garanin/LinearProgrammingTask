@@ -74,6 +74,8 @@ namespace LinearProgrammingTask
             this.Menu = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItemSaveAs = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItemOpen = new System.Windows.Forms.ToolStripMenuItem();
+            this.basisNumbersGrid = new System.Windows.Forms.DataGridView();
+            this.basisNumbersLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.linesGrid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.variableCount)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.linesCount)).BeginInit();
@@ -87,6 +89,7 @@ namespace LinearProgrammingTask
             this.tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.graphPictureControl)).BeginInit();
             this.menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.basisNumbersGrid)).BeginInit();
             this.SuspendLayout();
             // 
             // linesGrid
@@ -120,7 +123,7 @@ namespace LinearProgrammingTask
             0,
             0,
             0});
-            this.variableCount.ValueChanged += new System.EventHandler(this.variablesCount_ValueChanged);
+            this.variableCount.ValueChanged += new System.EventHandler(this.VariablesCount_ValueChanged);
             // 
             // linesCount
             // 
@@ -143,7 +146,7 @@ namespace LinearProgrammingTask
             0,
             0,
             0});
-            this.linesCount.ValueChanged += new System.EventHandler(this.linesCount_ValueChanged);
+            this.linesCount.ValueChanged += new System.EventHandler(this.LinesCount_ValueChanged);
             // 
             // tabControl
             // 
@@ -159,6 +162,8 @@ namespace LinearProgrammingTask
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.basisNumbersLabel);
+            this.tabPage1.Controls.Add(this.basisNumbersGrid);
             this.tabPage1.Controls.Add(this.label7);
             this.tabPage1.Controls.Add(this.solutionMode);
             this.tabPage1.Controls.Add(this.targetFuncGrid);
@@ -207,8 +212,11 @@ namespace LinearProgrammingTask
             // 
             // targetFuncGrid
             // 
+            this.targetFuncGrid.AllowUserToAddRows = false;
+            this.targetFuncGrid.AllowUserToDeleteRows = false;
             this.targetFuncGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.targetFuncGrid.Location = new System.Drawing.Point(245, 49);
+            this.targetFuncGrid.MultiSelect = false;
             this.targetFuncGrid.Name = "targetFuncGrid";
             this.targetFuncGrid.RowHeadersWidth = 51;
             this.targetFuncGrid.RowTemplate.Height = 24;
@@ -217,13 +225,13 @@ namespace LinearProgrammingTask
             // 
             // btn_OK
             // 
-            this.btn_OK.Location = new System.Drawing.Point(369, 331);
+            this.btn_OK.Location = new System.Drawing.Point(426, 452);
             this.btn_OK.Name = "btn_OK";
             this.btn_OK.Size = new System.Drawing.Size(124, 32);
             this.btn_OK.TabIndex = 15;
             this.btn_OK.Text = "ОК";
             this.btn_OK.UseVisualStyleBackColor = true;
-            this.btn_OK.Click += new System.EventHandler(this.btn_OK_Click);
+            this.btn_OK.Click += new System.EventHandler(this.Btn_OK_Click);
             // 
             // label6
             // 
@@ -244,8 +252,8 @@ namespace LinearProgrammingTask
             this.baseView.Name = "baseView";
             this.baseView.Size = new System.Drawing.Size(138, 24);
             this.baseView.TabIndex = 13;
-            this.baseView.Text = "Искуственный";
-            this.baseView.SelectedIndexChanged += new System.EventHandler(this.baseView_SelectedIndexChanged);
+            this.baseView.Text = "Заданный";
+            this.baseView.SelectedIndexChanged += new System.EventHandler(this.BaseView_SelectedIndexChanged);
             // 
             // label5
             // 
@@ -267,7 +275,7 @@ namespace LinearProgrammingTask
             this.fractionView.Size = new System.Drawing.Size(138, 24);
             this.fractionView.TabIndex = 11;
             this.fractionView.Text = "Обыкновенные";
-            this.fractionView.SelectedIndexChanged += new System.EventHandler(this.fractionView_SelectedIndexChanged);
+            this.fractionView.SelectedIndexChanged += new System.EventHandler(this.FractionView_SelectedIndexChanged);
             // 
             // label4
             // 
@@ -289,7 +297,7 @@ namespace LinearProgrammingTask
             this.optimizeTask.Size = new System.Drawing.Size(138, 24);
             this.optimizeTask.TabIndex = 9;
             this.optimizeTask.Text = "Min";
-            this.optimizeTask.SelectedIndexChanged += new System.EventHandler(this.optimizeTask_SelectedIndexChanged);
+            this.optimizeTask.SelectedIndexChanged += new System.EventHandler(this.OptimizeTask_SelectedIndexChanged);
             // 
             // label3
             // 
@@ -311,7 +319,7 @@ namespace LinearProgrammingTask
             this.developmentMethod.Size = new System.Drawing.Size(138, 24);
             this.developmentMethod.TabIndex = 7;
             this.developmentMethod.Text = "Симплекс метод";
-            this.developmentMethod.SelectedIndexChanged += new System.EventHandler(this.developmentMethod_SelectedIndexChanged);
+            this.developmentMethod.SelectedIndexChanged += new System.EventHandler(this.DevelopmentMethod_SelectedIndexChanged);
             // 
             // label2
             // 
@@ -367,7 +375,7 @@ namespace LinearProgrammingTask
             this.stepForwardArtificial.TabIndex = 12;
             this.stepForwardArtificial.Text = "Шаг вперёд";
             this.stepForwardArtificial.UseVisualStyleBackColor = true;
-            this.stepForwardArtificial.Click += new System.EventHandler(this.stepForwardArtificial_Click);
+            this.stepForwardArtificial.Click += new System.EventHandler(this.StepForwardArtificial_Click);
             // 
             // label12
             // 
@@ -469,7 +477,7 @@ namespace LinearProgrammingTask
             this.stepForwardSimplex.TabIndex = 14;
             this.stepForwardSimplex.Text = "Шаг вперёд";
             this.stepForwardSimplex.UseVisualStyleBackColor = true;
-            this.stepForwardSimplex.Click += new System.EventHandler(this.stepForwardSimplex_Click);
+            this.stepForwardSimplex.Click += new System.EventHandler(this.StepForwardSimplex_Click);
             // 
             // answerLabel
             // 
@@ -554,7 +562,7 @@ namespace LinearProgrammingTask
             this.graphPictureControl.Size = new System.Drawing.Size(400, 400);
             this.graphPictureControl.TabIndex = 7;
             this.graphPictureControl.TabStop = false;
-            this.graphPictureControl.Paint += new System.Windows.Forms.PaintEventHandler(this.graphPictureControl_Paint);
+            this.graphPictureControl.Paint += new System.Windows.Forms.PaintEventHandler(this.GraphPictureControl_Paint);
             // 
             // menuStrip1
             // 
@@ -564,7 +572,7 @@ namespace LinearProgrammingTask
             this.Menu});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1007, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1007, 30);
             this.menuStrip1.TabIndex = 5;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -574,7 +582,7 @@ namespace LinearProgrammingTask
             this.MenuItemSaveAs,
             this.MenuItemOpen});
             this.Menu.Name = "Menu";
-            this.Menu.Size = new System.Drawing.Size(59, 24);
+            this.Menu.Size = new System.Drawing.Size(59, 26);
             this.Menu.Text = "Файл";
             // 
             // MenuItemSaveAs
@@ -590,6 +598,26 @@ namespace LinearProgrammingTask
             this.MenuItemOpen.Size = new System.Drawing.Size(201, 26);
             this.MenuItemOpen.Text = "Открыть...";
             this.MenuItemOpen.Click += new System.EventHandler(this.MenuItemOpen_Click);
+            // 
+            // basisNumbersGrid
+            // 
+            this.basisNumbersGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.basisNumbersGrid.Location = new System.Drawing.Point(245, 319);
+            this.basisNumbersGrid.Name = "basisNumbersGrid";
+            this.basisNumbersGrid.RowHeadersWidth = 51;
+            this.basisNumbersGrid.RowTemplate.Height = 24;
+            this.basisNumbersGrid.Size = new System.Drawing.Size(715, 44);
+            this.basisNumbersGrid.TabIndex = 19;
+            this.basisNumbersGrid.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.BasisNumbersGrid_ColumnHeaderMouseClick);
+            // 
+            // basisNumbersLabel
+            // 
+            this.basisNumbersLabel.AutoSize = true;
+            this.basisNumbersLabel.Location = new System.Drawing.Point(242, 299);
+            this.basisNumbersLabel.Name = "basisNumbersLabel";
+            this.basisNumbersLabel.Size = new System.Drawing.Size(189, 17);
+            this.basisNumbersLabel.TabIndex = 20;
+            this.basisNumbersLabel.Text = "Номера базисных векторов";
             // 
             // Form1
             // 
@@ -616,6 +644,7 @@ namespace LinearProgrammingTask
             ((System.ComponentModel.ISupportInitialize)(this.graphPictureControl)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.basisNumbersGrid)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -668,6 +697,8 @@ namespace LinearProgrammingTask
         private System.Windows.Forms.Button stepForwardArtificial;
         private System.Windows.Forms.Button stepBackSimplex;
         private System.Windows.Forms.Button stepForwardSimplex;
+        private System.Windows.Forms.DataGridView basisNumbersGrid;
+        private System.Windows.Forms.Label basisNumbersLabel;
     }
 }
 

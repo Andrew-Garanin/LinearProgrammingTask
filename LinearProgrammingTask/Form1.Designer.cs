@@ -29,11 +29,14 @@ namespace LinearProgrammingTask
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.linesGrid = new System.Windows.Forms.DataGridView();
             this.variableCount = new System.Windows.Forms.NumericUpDown();
             this.linesCount = new System.Windows.Forms.NumericUpDown();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.basisNumbersLabel = new System.Windows.Forms.Label();
+            this.basisNumbersGrid = new System.Windows.Forms.DataGridView();
             this.label7 = new System.Windows.Forms.Label();
             this.solutionMode = new System.Windows.Forms.ComboBox();
             this.targetFuncGrid = new System.Windows.Forms.DataGridView();
@@ -74,13 +77,12 @@ namespace LinearProgrammingTask
             this.Menu = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItemSaveAs = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItemOpen = new System.Windows.Forms.ToolStripMenuItem();
-            this.basisNumbersGrid = new System.Windows.Forms.DataGridView();
-            this.basisNumbersLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.linesGrid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.variableCount)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.linesCount)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.basisNumbersGrid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.targetFuncGrid)).BeginInit();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.artificialBaseMethodGrid)).BeginInit();
@@ -89,7 +91,6 @@ namespace LinearProgrammingTask
             this.tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.graphPictureControl)).BeginInit();
             this.menuStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.basisNumbersGrid)).BeginInit();
             this.SuspendLayout();
             // 
             // linesGrid
@@ -189,6 +190,26 @@ namespace LinearProgrammingTask
             this.tabPage1.Text = "Условия задачи";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // basisNumbersLabel
+            // 
+            this.basisNumbersLabel.AutoSize = true;
+            this.basisNumbersLabel.Location = new System.Drawing.Point(242, 299);
+            this.basisNumbersLabel.Name = "basisNumbersLabel";
+            this.basisNumbersLabel.Size = new System.Drawing.Size(189, 17);
+            this.basisNumbersLabel.TabIndex = 20;
+            this.basisNumbersLabel.Text = "Номера базисных векторов";
+            // 
+            // basisNumbersGrid
+            // 
+            this.basisNumbersGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.basisNumbersGrid.Location = new System.Drawing.Point(245, 319);
+            this.basisNumbersGrid.Name = "basisNumbersGrid";
+            this.basisNumbersGrid.RowHeadersWidth = 51;
+            this.basisNumbersGrid.RowTemplate.Height = 24;
+            this.basisNumbersGrid.Size = new System.Drawing.Size(715, 44);
+            this.basisNumbersGrid.TabIndex = 19;
+            this.basisNumbersGrid.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.BasisNumbersGrid_ColumnHeaderMouseClick);
+            // 
             // label7
             // 
             this.label7.AutoSize = true;
@@ -208,7 +229,7 @@ namespace LinearProgrammingTask
             this.solutionMode.Name = "solutionMode";
             this.solutionMode.Size = new System.Drawing.Size(138, 24);
             this.solutionMode.TabIndex = 17;
-            this.solutionMode.Text = "Автоматический";
+            this.solutionMode.Text = "Пошаговый";
             // 
             // targetFuncGrid
             // 
@@ -252,7 +273,7 @@ namespace LinearProgrammingTask
             this.baseView.Name = "baseView";
             this.baseView.Size = new System.Drawing.Size(138, 24);
             this.baseView.TabIndex = 13;
-            this.baseView.Text = "Заданный";
+            this.baseView.Text = "Искуственный";
             this.baseView.SelectedIndexChanged += new System.EventHandler(this.BaseView_SelectedIndexChanged);
             // 
             // label5
@@ -438,6 +459,8 @@ namespace LinearProgrammingTask
             this.artificialBaseMethodGrid.Name = "artificialBaseMethodGrid";
             this.artificialBaseMethodGrid.ReadOnly = true;
             this.artificialBaseMethodGrid.RowHeadersWidth = 70;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.White;
+            this.artificialBaseMethodGrid.RowsDefaultCellStyle = dataGridViewCellStyle1;
             this.artificialBaseMethodGrid.RowTemplate.Height = 25;
             this.artificialBaseMethodGrid.Size = new System.Drawing.Size(515, 379);
             this.artificialBaseMethodGrid.TabIndex = 0;
@@ -572,7 +595,7 @@ namespace LinearProgrammingTask
             this.Menu});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1007, 30);
+            this.menuStrip1.Size = new System.Drawing.Size(1007, 28);
             this.menuStrip1.TabIndex = 5;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -582,7 +605,7 @@ namespace LinearProgrammingTask
             this.MenuItemSaveAs,
             this.MenuItemOpen});
             this.Menu.Name = "Menu";
-            this.Menu.Size = new System.Drawing.Size(59, 26);
+            this.Menu.Size = new System.Drawing.Size(59, 24);
             this.Menu.Text = "Файл";
             // 
             // MenuItemSaveAs
@@ -599,26 +622,6 @@ namespace LinearProgrammingTask
             this.MenuItemOpen.Text = "Открыть...";
             this.MenuItemOpen.Click += new System.EventHandler(this.MenuItemOpen_Click);
             // 
-            // basisNumbersGrid
-            // 
-            this.basisNumbersGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.basisNumbersGrid.Location = new System.Drawing.Point(245, 319);
-            this.basisNumbersGrid.Name = "basisNumbersGrid";
-            this.basisNumbersGrid.RowHeadersWidth = 51;
-            this.basisNumbersGrid.RowTemplate.Height = 24;
-            this.basisNumbersGrid.Size = new System.Drawing.Size(715, 44);
-            this.basisNumbersGrid.TabIndex = 19;
-            this.basisNumbersGrid.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.BasisNumbersGrid_ColumnHeaderMouseClick);
-            // 
-            // basisNumbersLabel
-            // 
-            this.basisNumbersLabel.AutoSize = true;
-            this.basisNumbersLabel.Location = new System.Drawing.Point(242, 299);
-            this.basisNumbersLabel.Name = "basisNumbersLabel";
-            this.basisNumbersLabel.Size = new System.Drawing.Size(189, 17);
-            this.basisNumbersLabel.TabIndex = 20;
-            this.basisNumbersLabel.Text = "Номера базисных векторов";
-            // 
             // Form1
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -633,6 +636,7 @@ namespace LinearProgrammingTask
             this.tabControl.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.basisNumbersGrid)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.targetFuncGrid)).EndInit();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
@@ -644,7 +648,6 @@ namespace LinearProgrammingTask
             ((System.ComponentModel.ISupportInitialize)(this.graphPictureControl)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.basisNumbersGrid)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

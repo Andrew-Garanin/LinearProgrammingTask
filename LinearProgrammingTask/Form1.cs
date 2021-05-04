@@ -429,7 +429,11 @@ namespace LinearProgrammingTask
             SetColorsOnSupElements(supEl, this.simplexMethodGrid);// Раскрасили все опорные элементы
 
             if (this.solutionMode.Text == "Пошаговый")
+            {
+                tempVars = null;
+                mainSupElement = MainSupEl(this.simplexMethodGrid);// Нахождение и закрашивание главного опорного эл-та
                 return;
+            }
 
             SimplexMethod(this.simplexMethodGrid);
         }
@@ -911,7 +915,6 @@ namespace LinearProgrammingTask
                             this.artificialBaseMethodGrid[i, j].Value = Fraction.ToFraction(this.artificialBaseMethodGrid[i, j].Value.ToString()).ToDouble();
                 }
 
-
                 mainSupElement = MainSupEl(this.artificialBaseMethodGrid);// Нахождение и закрашивание главного опорного эл-та
             }
             else
@@ -1042,17 +1045,17 @@ namespace LinearProgrammingTask
 
                 supEl = SuportElements(this.simplexMethodGrid);// Нашли все опорные элементы
                 SetColorsOnSupElements(supEl, this.simplexMethodGrid);// Раскрасили все опорные элементы
+                tempVars = null;
+                mainSupElement = MainSupEl(this.simplexMethodGrid);// Нахождение и закрашивание главного порного эл-та
                 this.stepForwardArtificial.Enabled = false;
             }
-        }
+        }// Вроде эта кнопка готова!
 
         private void StepForwardSimplex_Click(object sender, EventArgs e)
         {
             if (!IsEndSimplexMethod())
             {
                 tempVars = null;
-                 mainSupElement = MainSupEl(this.simplexMethodGrid);// Нахождение и закрашивание главного порного эл-та
-
                 startRow += (int)this.linesCount.Value + 3;// Строка, с которой будет начинаться каждая новая таблица
                 this.simplexMethodGrid.Rows[startRow - 1].HeaderCell.Value = String.Concat("x(", countTables, ")");
 
@@ -1060,12 +1063,23 @@ namespace LinearProgrammingTask
                 countTables++;
                 List<Point> supEl = SuportElements(this.simplexMethodGrid);// Нашли все опорные элементы
                 SetColorsOnSupElements(supEl, this.simplexMethodGrid);
+
+                if (this.fractionView.Text == "Десятичные")
+                {
+                    for (int i = 0; i < (int)variableCount.Value - (int)linesCount.Value + 1; i++)
+                        for (int j = startRow; j < startRow + (int)this.linesCount.Value + 1; j++)
+                            this.simplexMethodGrid[i, j].Value = Fraction.ToFraction(this.simplexMethodGrid[i, j].Value.ToString()).ToDouble();
+                }
+
+                mainSupElement = MainSupEl(this.simplexMethodGrid);// Нахождение и закрашивание главного порного эл-та
             }
             else
             {
                 this.stepForwardSimplex.Enabled = false;
                 // Вывод результатов
                 Fraction[] answerPoint = new Fraction[(int)this.variableCount.Value];
+
+                // Обнуление всех свободных переменных
                 for (int i = 0; i < (int)this.variableCount.Value - (int)this.linesCount.Value; i++)
                 {
                     if (startRow != 0)
@@ -1078,23 +1092,40 @@ namespace LinearProgrammingTask
                         int freeVar = this.simplexMethodGrid.Columns[i].HeaderText.ToString()[1] - '0';
                         answerPoint[freeVar - 1] = 0;
                     }
-
                 }
 
+                // Запоминание значений базисных переменных
                 for (int i = startRow; i < startRow + (int)this.linesCount.Value; i++)
                 {
                     int freeVar = this.simplexMethodGrid.Rows[i].HeaderCell.Value.ToString()[1] - '0';
                     answerPoint[freeVar - 1] = Fraction.ToFraction(this.simplexMethodGrid[(int)variableCount.Value - (int)this.linesCount.Value, i].Value.ToString());
                 }
 
+                // Формирование строки с ответом задачи ЛП
                 this.answerLabel.Text = "f*(";
                 for (int i = 0; i < (int)this.variableCount.Value; i++)
                 {
-                    this.answerLabel.Text = String.Concat(this.answerLabel.Text, answerPoint[i].ToString());
+                    if (this.fractionView.Text == "Десятичные")
+                        this.answerLabel.Text = String.Concat(this.answerLabel.Text, answerPoint[i].ToDouble().ToString());
+                    else
+                        this.answerLabel.Text = String.Concat(this.answerLabel.Text, answerPoint[i].ToString());
                     this.answerLabel.Text = String.Concat(this.answerLabel.Text, ';');
                 }
                 this.answerLabel.Text = this.answerLabel.Text.Remove(this.answerLabel.Text.Length - 1);
-                this.answerLabel.Text = String.Concat(this.answerLabel.Text, ")=", (Fraction.ToFraction(this.simplexMethodGrid[(int)variableCount.Value - (int)this.linesCount.Value, startRow + (int)this.linesCount.Value].Value.ToString()) * -1).ToString());
+                if (this.optimizeTask.Text == "Min")
+                {
+                    if (this.fractionView.Text == "Десятичные")
+                        this.answerLabel.Text = String.Concat(this.answerLabel.Text, ")=", (Fraction.ToFraction(this.simplexMethodGrid[(int)variableCount.Value - (int)this.linesCount.Value, startRow + (int)this.linesCount.Value].Value.ToString()) * -1).ToDouble().ToString());
+                    else
+                        this.answerLabel.Text = String.Concat(this.answerLabel.Text, ")=", (Fraction.ToFraction(this.simplexMethodGrid[(int)variableCount.Value - (int)this.linesCount.Value, startRow + (int)this.linesCount.Value].Value.ToString()) * -1).ToString());
+                }
+                else
+                {
+                    if (this.fractionView.Text == "Десятичные")
+                        this.answerLabel.Text = String.Concat(this.answerLabel.Text, ")=", Fraction.ToFraction(this.simplexMethodGrid[(int)variableCount.Value - (int)this.linesCount.Value, startRow + (int)this.linesCount.Value].Value.ToString()).ToDouble().ToString());
+                    else
+                        this.answerLabel.Text = String.Concat(this.answerLabel.Text, ")=", (Fraction.ToFraction(this.simplexMethodGrid[(int)variableCount.Value - (int)this.linesCount.Value, startRow + (int)this.linesCount.Value].Value.ToString())).ToString());
+                }
             }
         }
 
@@ -1124,7 +1155,7 @@ namespace LinearProgrammingTask
                 e.RowIndex >= startRow + (int)this.linesCount.Value || e.RowIndex < startRow ||
                 this.artificialBaseMethodGrid[e.ColumnIndex, e.RowIndex].Style.BackColor != Color.FromArgb(255, 0, 255, 0) ||
                 this.artificialBaseMethodGrid[e.ColumnIndex, e.RowIndex].Style.BackColor == Color.FromArgb(255, 255, 0, 255))
-                MessageBox.Show("smert");
+                return;
             else
             {
                 this.artificialBaseMethodGrid[mainSupElement.X, mainSupElement.Y].Style.BackColor = Color.FromArgb(255, 0, 255, 0);
@@ -1137,5 +1168,25 @@ namespace LinearProgrammingTask
         {
             this.artificialBaseMethodGrid.ClearSelection();
         }
+
+        private void SimplexMethodGrid_SelectionChanged(object sender, EventArgs e)
+        {
+            this.simplexMethodGrid.ClearSelection();
+        }
+
+        private void SimplexMethodGrid_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.ColumnIndex >= (int)this.variableCount.Value - iter + 1 || e.ColumnIndex < 0 ||
+                e.RowIndex >= startRow + (int)this.linesCount.Value || e.RowIndex < startRow ||
+                this.simplexMethodGrid[e.ColumnIndex, e.RowIndex].Style.BackColor != Color.FromArgb(255, 0, 255, 0) ||
+                this.simplexMethodGrid[e.ColumnIndex, e.RowIndex].Style.BackColor == Color.FromArgb(255, 255, 0, 255))
+                return;
+            else
+            {
+                this.simplexMethodGrid[mainSupElement.X, mainSupElement.Y].Style.BackColor = Color.FromArgb(255, 0, 255, 0);
+                this.simplexMethodGrid[e.ColumnIndex, e.RowIndex].Style.BackColor = Color.FromArgb(255, 255, 0, 255);
+                mainSupElement = new Point(e.ColumnIndex, e.RowIndex);
+            }
+        }// Событие нажатия на ячейку в таблице симплекс метода
     }
 }

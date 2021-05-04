@@ -543,6 +543,8 @@ namespace LinearProgrammingTask
             this.simplexMethodGrid.RowTemplate.Height = 25;
             this.simplexMethodGrid.Size = new System.Drawing.Size(420, 379);
             this.simplexMethodGrid.TabIndex = 5;
+            this.simplexMethodGrid.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.SimplexMethodGrid_CellMouseClick);
+            this.simplexMethodGrid.SelectionChanged += new System.EventHandler(this.SimplexMethodGrid_SelectionChanged);
             // 
             // label9
             // 

@@ -12,6 +12,7 @@ namespace LinearProgrammingTask
     {
         public int iter = 1;// Номер итерации в таблице
         bool isIdleStep;// Нужен ли холостой шаг
+        Point mainSupElement;
         public int startRow = 0;// Строка, с которой начинается каждая следующая таблица
         public List<String> tempVars = new List<String>();// Искуственно введенные переменные
         public List<int> baseVars = new List<int>();// Базасные переменные, которые ввел пользователь
@@ -272,17 +273,19 @@ namespace LinearProgrammingTask
                 }
 
                 if (this.solutionMode.Text == "Пошаговый")
+                {
+                    mainSupElement = MainSupEl(this.artificialBaseMethodGrid);// Нахождение и закрашивание главного опорного эл-та
                     return;
-                
+                }
                 // Получение таблицы в которой останутся только переменные из начальной задачи
                 while (!IsEndArtificialBaseMethod())
                 {
-                    Point mainSupElement = MainSupEl(this.artificialBaseMethodGrid);// Нахождение и закрашивание главного опорного эл-та
+                    mainSupElement = MainSupEl(this.artificialBaseMethodGrid);// Нахождение и закрашивание главного опорного эл-та
 
                     startRow += (int)this.linesCount.Value + 3;// Строка, с которой будет начинаться каждая новая таблица
                     this.artificialBaseMethodGrid.Rows[startRow - 1].HeaderCell.Value = String.Concat("x(", iter, ")");// Номер новой строки
 
-                    SimplexStepArtificial(mainSupElement, this.artificialBaseMethodGrid);// Шаг метода искуссвенного базиса
+                    SimplexStepArtificial(this.artificialBaseMethodGrid);// Шаг метода искуссвенного базиса
                     iter++;
                     supEl = SuportElements(this.artificialBaseMethodGrid);// Нашли все опорные элементы
 
@@ -435,7 +438,6 @@ namespace LinearProgrammingTask
         {
             //  Поиск номера строки, в которой стоит переменная от которой хотим избавиться
             int numOfExcessStr = -1;
-            Point mainSupElement;
             for (int i = startRow; i < startRow + (int)this.linesCount.Value; i++)
                 if (tempVars.Contains(this.artificialBaseMethodGrid.Rows[i].HeaderCell.Value.ToString()))
                 {
@@ -444,16 +446,27 @@ namespace LinearProgrammingTask
                 }
 
             //Выбор и закрашивание главного опорного элемента
-            mainSupElement = supEl.Find((p)=>p.Y==numOfExcessStr);
-            this.artificialBaseMethodGrid[mainSupElement.X, mainSupElement.Y].Style.BackColor = Color.FromArgb(255, 255, 0, 255);
+            if (this.solutionMode.Text != "Пошаговый")
+            {
+                mainSupElement = supEl.Find((p) => p.Y == numOfExcessStr);
+                this.artificialBaseMethodGrid[mainSupElement.X, mainSupElement.Y].Style.BackColor = Color.FromArgb(255, 255, 0, 255);
+            }
 
             startRow += (int)this.linesCount.Value + 3;// Строка, начиная с которой, будет выводиться новая таблица
             this.artificialBaseMethodGrid.Rows[startRow-1].HeaderCell.Value = String.Concat("x(",iter,")");
-            SimplexStepArtificial(mainSupElement, this.artificialBaseMethodGrid);// Сам холостой шаг
+            SimplexStepArtificial(this.artificialBaseMethodGrid);// Сам холостой шаг
             iter++;
 
             supEl = SuportElements(this.artificialBaseMethodGrid);// Нашли все опорные элементы
             SetColorsOnSupElements(supEl, this.artificialBaseMethodGrid);// Раскрасили все опорные элементы
+
+            if (this.solutionMode.Text == "Пошаговый")
+            {
+                //mainSupElement = supEl.Find((p) => p.Y == numOfExcessStr);
+                mainSupElement = MainSupEl(this.artificialBaseMethodGrid);
+                if(mainSupElement!= new Point(-100,-100))
+                    this.artificialBaseMethodGrid[mainSupElement.X, mainSupElement.Y].Style.BackColor = Color.FromArgb(255, 255, 0, 255);
+            }
         }
 
         private List<Point> SuportElements(DataGridView dataGrid)
@@ -528,10 +541,10 @@ namespace LinearProgrammingTask
                     }
                 }
             }
-            return new Point(0,0);// Недостижимый код
+            return new Point(-100,-100);// Если нет опорного элемента
         }// Выбор главного опорного элемента
 
-        private void SimplexStepArtificial(Point mainSupElement, DataGridView dataGrid)
+        private void SimplexStepArtificial( DataGridView dataGrid)
         {
             // Горизонталь
             for (int i = 0, columnVarNumber = i; i < (int)this.variableCount.Value - 1 * iter; i++, columnVarNumber++)
@@ -590,7 +603,7 @@ namespace LinearProgrammingTask
             }
         }// Шаг симплекс метода с удалением столбца с искуственной переменной
 
-        private void SimplexStep(Point mainSupElement, DataGridView dataGrid)// Обычный шаг симплекс метода
+        private void SimplexStep( DataGridView dataGrid)// Обычный шаг симплекс метода
         {
             // Горизонталь
             for (int i = 0; i < (int)this.variableCount.Value - (int)this.linesCount.Value; i++)
@@ -662,12 +675,12 @@ namespace LinearProgrammingTask
             {
                 tempVars = null;// Как только начался сам симплекс метод, искусственных переменных в таблице не осталось
 
-                Point mainSupElement = MainSupEl(dataGrid);// Нахождение и закрашивание главного порного эл-та
+                mainSupElement = MainSupEl(dataGrid);// Нахождение и закрашивание главного порного эл-та
 
                 startRow += (int)this.linesCount.Value + 3;// Строка, с которой будет начинаться каждая новая таблица
                 dataGrid.Rows[startRow-1].HeaderCell.Value = String.Concat("x(", countTables, ")");
 
-                SimplexStep(mainSupElement, dataGrid);
+                SimplexStep( dataGrid);
                 countTables++;
                 List<Point> supEl = SuportElements(this.simplexMethodGrid);// Нашли все опорные элементы
                 SetColorsOnSupElements(supEl, this.simplexMethodGrid);// Раскрасили все опорные элементы
@@ -872,13 +885,21 @@ namespace LinearProgrammingTask
         {
             if (!IsEndArtificialBaseMethod())
             {
-                Point mainSupElement = MainSupEl(this.artificialBaseMethodGrid);// Нахождение и закрашивание главного опорного эл-та
-
                 startRow += (int)this.linesCount.Value + 3;// Строка, с которой будет начинаться каждая новая таблица
                 this.artificialBaseMethodGrid.Rows[startRow - 1].HeaderCell.Value = String.Concat("x(", iter, ")");// Номер новой строки
 
-                SimplexStepArtificial(mainSupElement, this.artificialBaseMethodGrid);// Шаг метода искуссвенного базиса
+                SimplexStepArtificial(this.artificialBaseMethodGrid);// Шаг метода искуссвенного базиса
                 iter++;
+
+                // Проверка нужен ли будет холостой шаг
+                isIdleStep = false;
+                for (int i = 0; i < (int)variableCount.Value + 1 - iter; i++)
+                    if (Fraction.ToFraction(this.artificialBaseMethodGrid[i, startRow + (int)this.linesCount.Value].Value.ToString()) != 0)
+                    {
+                        isIdleStep = true;
+                        break;
+                    }
+
                 supEl = SuportElements(this.artificialBaseMethodGrid);// Нашли все опорные элементы
 
                 SetColorsOnSupElements(supEl, this.artificialBaseMethodGrid);// Раскрасили все опорные элементы
@@ -889,6 +910,9 @@ namespace LinearProgrammingTask
                         for (int j = startRow; j < startRow + (int)this.linesCount.Value + 1; j++)
                             this.artificialBaseMethodGrid[i, j].Value = Fraction.ToFraction(this.artificialBaseMethodGrid[i, j].Value.ToString()).ToDouble();
                 }
+
+
+                mainSupElement = MainSupEl(this.artificialBaseMethodGrid);// Нахождение и закрашивание главного опорного эл-та
             }
             else
             {
@@ -1027,12 +1051,12 @@ namespace LinearProgrammingTask
             if (!IsEndSimplexMethod())
             {
                 tempVars = null;
-                Point mainSupElement = MainSupEl(this.simplexMethodGrid);// Нахождение и закрашивание главного порного эл-та
+                 mainSupElement = MainSupEl(this.simplexMethodGrid);// Нахождение и закрашивание главного порного эл-та
 
                 startRow += (int)this.linesCount.Value + 3;// Строка, с которой будет начинаться каждая новая таблица
                 this.simplexMethodGrid.Rows[startRow - 1].HeaderCell.Value = String.Concat("x(", countTables, ")");
 
-                SimplexStep(mainSupElement, this.simplexMethodGrid);
+                SimplexStep( this.simplexMethodGrid);
                 countTables++;
                 List<Point> supEl = SuportElements(this.simplexMethodGrid);// Нашли все опорные элементы
                 SetColorsOnSupElements(supEl, this.simplexMethodGrid);
@@ -1093,5 +1117,25 @@ namespace LinearProgrammingTask
             else
                 this.basisNumbersGrid.Columns[e.ColumnIndex].HeaderCell.Style.BackColor = Color.Empty;
         }// Событие нажатия на столбец в таблице для выбора базисных переменых
+
+        private void ArtificialBaseMethodGrid_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.ColumnIndex >= (int)this.variableCount.Value - iter + 1 || e.ColumnIndex < 0 ||
+                e.RowIndex >= startRow + (int)this.linesCount.Value || e.RowIndex < startRow ||
+                this.artificialBaseMethodGrid[e.ColumnIndex, e.RowIndex].Style.BackColor != Color.FromArgb(255, 0, 255, 0) ||
+                this.artificialBaseMethodGrid[e.ColumnIndex, e.RowIndex].Style.BackColor == Color.FromArgb(255, 255, 0, 255))
+                MessageBox.Show("smert");
+            else
+            {
+                this.artificialBaseMethodGrid[mainSupElement.X, mainSupElement.Y].Style.BackColor = Color.FromArgb(255, 0, 255, 0);
+                this.artificialBaseMethodGrid[e.ColumnIndex, e.RowIndex].Style.BackColor = Color.FromArgb(255, 255, 0, 255);
+                mainSupElement = new Point(e.ColumnIndex, e.RowIndex);
+            }
+        }// Событие нажатия на ячейку в таблице метода искусс. базиса
+
+        private void ArtificialBaseMethodGrid_SelectionChanged(object sender, EventArgs e)
+        {
+            this.artificialBaseMethodGrid.ClearSelection();
+        }
     }
 }

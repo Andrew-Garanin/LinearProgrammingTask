@@ -59,14 +59,12 @@ namespace LinearProgrammingTask
             this.label13 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
-            this.label10 = new System.Windows.Forms.Label();
             this.artificialBaseLabel = new System.Windows.Forms.Label();
             this.artificialBaseMethodGrid = new System.Windows.Forms.DataGridView();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.stepBackSimplex = new System.Windows.Forms.Button();
             this.stepForwardSimplex = new System.Windows.Forms.Button();
             this.answerLabel = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
             this.simplexMethodGrid = new System.Windows.Forms.DataGridView();
             this.label9 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
@@ -103,6 +101,7 @@ namespace LinearProgrammingTask
             this.linesGrid.RowTemplate.Height = 24;
             this.linesGrid.Size = new System.Drawing.Size(715, 146);
             this.linesGrid.TabIndex = 0;
+            this.linesGrid.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.LinesGrid_CellValidating);
             // 
             // variableCount
             // 
@@ -244,6 +243,7 @@ namespace LinearProgrammingTask
             this.targetFuncGrid.RowTemplate.Height = 24;
             this.targetFuncGrid.Size = new System.Drawing.Size(715, 86);
             this.targetFuncGrid.TabIndex = 16;
+            this.targetFuncGrid.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.TargetFuncGrid_CellValidating);
             // 
             // btn_OK
             // 
@@ -370,7 +370,6 @@ namespace LinearProgrammingTask
             this.tabPage2.Controls.Add(this.label13);
             this.tabPage2.Controls.Add(this.panel3);
             this.tabPage2.Controls.Add(this.panel4);
-            this.tabPage2.Controls.Add(this.label10);
             this.tabPage2.Controls.Add(this.artificialBaseLabel);
             this.tabPage2.Controls.Add(this.artificialBaseMethodGrid);
             this.tabPage2.Location = new System.Drawing.Point(4, 25);
@@ -388,6 +387,7 @@ namespace LinearProgrammingTask
             this.stepBackArtificial.TabIndex = 13;
             this.stepBackArtificial.Text = "Шаг назад";
             this.stepBackArtificial.UseVisualStyleBackColor = true;
+            this.stepBackArtificial.Click += new System.EventHandler(this.StepBackArtificial_Click);
             // 
             // stepForwardArtificial
             // 
@@ -433,15 +433,6 @@ namespace LinearProgrammingTask
             this.panel4.Size = new System.Drawing.Size(21, 21);
             this.panel4.TabIndex = 8;
             // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(34, 17);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(206, 17);
-            this.label10.TabIndex = 4;
-            this.label10.Text = "Метод искусственного базиса";
-            // 
             // artificialBaseLabel
             // 
             this.artificialBaseLabel.AutoSize = true;
@@ -483,7 +474,6 @@ namespace LinearProgrammingTask
             this.tabPage3.Controls.Add(this.stepBackSimplex);
             this.tabPage3.Controls.Add(this.stepForwardSimplex);
             this.tabPage3.Controls.Add(this.answerLabel);
-            this.tabPage3.Controls.Add(this.label11);
             this.tabPage3.Controls.Add(this.simplexMethodGrid);
             this.tabPage3.Controls.Add(this.label9);
             this.tabPage3.Controls.Add(this.label8);
@@ -504,6 +494,7 @@ namespace LinearProgrammingTask
             this.stepBackSimplex.TabIndex = 15;
             this.stepBackSimplex.Text = "Шаг назад";
             this.stepBackSimplex.UseVisualStyleBackColor = true;
+            this.stepBackSimplex.Click += new System.EventHandler(this.StepBackSimplex_Click);
             // 
             // stepForwardSimplex
             // 
@@ -523,15 +514,6 @@ namespace LinearProgrammingTask
             this.answerLabel.Size = new System.Drawing.Size(0, 17);
             this.answerLabel.TabIndex = 8;
             // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(34, 10);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(116, 17);
-            this.label11.TabIndex = 6;
-            this.label11.Text = "Симплекс метод";
-            // 
             // simplexMethodGrid
             // 
             this.simplexMethodGrid.AllowUserToAddRows = false;
@@ -539,6 +521,7 @@ namespace LinearProgrammingTask
             this.simplexMethodGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.simplexMethodGrid.Location = new System.Drawing.Point(15, 39);
             this.simplexMethodGrid.Name = "simplexMethodGrid";
+            this.simplexMethodGrid.ReadOnly = true;
             this.simplexMethodGrid.RowHeadersWidth = 70;
             this.simplexMethodGrid.RowTemplate.Height = 25;
             this.simplexMethodGrid.Size = new System.Drawing.Size(420, 379);
@@ -701,8 +684,6 @@ namespace LinearProgrammingTask
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label label11;
         private System.Windows.Forms.DataGridView simplexMethodGrid;
         private System.Windows.Forms.Label artificialBaseLabel;
         private System.Windows.Forms.Label answerLabel;

@@ -100,6 +100,8 @@ namespace LinearProgrammingTask
 
             for (int i = 0; i < RowCount; i++)// Делаем на главной диагонали единицы
             {
+                if (Matrix[i][i] == 0)
+                    continue;
                 Fraction ReversedElement = 1 / Matrix[i][i];
                 for (int j = i; j < ColumCount; j++)
                 {

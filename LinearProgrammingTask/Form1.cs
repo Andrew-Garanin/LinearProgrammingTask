@@ -199,6 +199,42 @@ namespace LinearProgrammingTask
             SolidBrush ControlBrush = new SolidBrush(picGrafic.BackColor);          //кисть цвета фона для закрашивания прямоугольника вывода значения координаты
             Font drawFont = new Font("Arial", 12);                                  //шрифт вывода координат
 
+            // Вывод ответа
+
+            Fraction[] answerPoint = new Fraction[(int)this.variableCount.Value];
+
+            // Свободные переменные
+            int freeVar = this.simplexMethodGrid.Columns[0].HeaderText.ToString()[1] - '0';
+            answerPoint[freeVar - 1] = Fraction.ToFraction(Gr_Method.Point_List[Obj_Point_Help].X.ToString());
+
+            freeVar = this.simplexMethodGrid.Columns[1].HeaderText.ToString()[1] - '0';
+            answerPoint[freeVar - 1] = Fraction.ToFraction(Gr_Method.Point_List[Obj_Point_Help].Y.ToString());
+
+            // Запоминание значений базисных переменных
+            for (int i = startRow; i < startRow + (int)this.linesCount.Value; i++)
+            {
+                freeVar = this.simplexMethodGrid.Rows[i].HeaderCell.Value.ToString()[1] - '0';
+                answerPoint[freeVar - 1] = Fraction.ToFraction((-1*(Fraction.ToFraction(this.simplexMethodGrid[0, i].Value.ToString()) * 
+                    Fraction.ToFraction(Gr_Method.Point_List[Obj_Point_Help].X.ToString()) + 
+                    Fraction.ToFraction(this.simplexMethodGrid[1, i].Value.ToString()) * Fraction.ToFraction(Gr_Method.Point_List[Obj_Point_Help].Y.ToString()) - 
+                    Fraction.ToFraction(this.simplexMethodGrid[2, i].Value.ToString()))).ToString());
+            }
+
+            // Формирование строки с ответом задачи ЛП
+            this.GraphAnswerLabel.Text = "f*(";
+            for (int i = 0; i < (int)this.variableCount.Value; i++)
+            {
+                if (this.fractionView.Text == "Десятичные")
+                    this.GraphAnswerLabel.Text = String.Concat(this.GraphAnswerLabel.Text, answerPoint[i].ToDouble().ToString());
+                else
+                    this.GraphAnswerLabel.Text = String.Concat(this.GraphAnswerLabel.Text, answerPoint[i].ToString());
+                this.GraphAnswerLabel.Text = String.Concat(this.GraphAnswerLabel.Text, ';');
+            }
+            this.GraphAnswerLabel.Text = this.GraphAnswerLabel.Text.Remove(this.GraphAnswerLabel.Text.Length - 1);
+            this.GraphAnswerLabel.Text = String.Concat(this.GraphAnswerLabel.Text, " ) = ");
+
+            this.GraphAnswerLabel.Text = String.Concat(this.GraphAnswerLabel.Text, Fraction.ToFraction(this.simplexMethodGrid[0, (int)this.linesCount.Value].Value.ToString()) * Fraction.ToFraction(Gr_Method.Point_List[Obj_Point_Help].X.ToString()) + Fraction.ToFraction(this.simplexMethodGrid[1, (int)this.linesCount.Value].Value.ToString()) * Fraction.ToFraction(Gr_Method.Point_List[Obj_Point_Help].Y.ToString()) + -1 * Fraction.ToFraction(this.simplexMethodGrid[2, (int)this.linesCount.Value].Value.ToString()));
+
             //Прорисовка осей
             //Ось X
             Point KX1, KX2;
@@ -301,7 +337,7 @@ namespace LinearProgrammingTask
             int Obj_Point = Gr_Method.FindObjectPoint();
             if (Obj_Point == -1)
             {
-                //MessageBox.Show("Решения не существуют");
+                MessageBox.Show("Решения не существуют");
                 Obj_Point = Obj_Point_Help;     //присваиваем целевую точку, найденную до введения вспомогательных линий
             }
             else
@@ -501,11 +537,14 @@ namespace LinearProgrammingTask
                     Solution.RightPart[i] = lines[i, (uint)this.variableCount.Value];
                 }
 
-                if (Solution.SolveMatrix(baseVars) == 1)// Приведение матрицы к диагональному виду методом Гаусса
-                {
-                    MessageBox.Show("У матрицы нет решений или их бесконечно много");
-                    return;
-                }
+                //if ((int)this.variableCount.Value != 2)
+                //{
+                    if (Solution.SolveMatrix(baseVars) == 1)// Приведение матрицы к диагональному виду методом Гаусса
+                    {
+                        MessageBox.Show("У матрицы нет решений или их бесконечно много");
+                        return;
+                    }
+                //}
             }
             else// МЕТОД ИСКУССТВЕННОГО БАЗИСА
             {
@@ -575,7 +614,7 @@ namespace LinearProgrammingTask
                 if (this.solutionMode.Text == "Пошаговый")
                 {
                     mainSupElement = MainSupEl(this.artificialBaseMethodGrid);// Нахождение и закрашивание главного опорного эл-та
-
+                    this.stepForwardArtificial.Enabled=true;
                     // Запоминание информации для первого шага
                     artificialStepInfo.Add(new StepInformation(startRow, new List<Point>(supEl), iter, mainSupElement, countTables, new List<String>(tempVars)));
                     return;
@@ -590,7 +629,40 @@ namespace LinearProgrammingTask
 
                     SimplexStepArtificial(this.artificialBaseMethodGrid);// Шаг метода искуссвенного базиса
                     iter++;
+
+                    //isIdleStep = true;
+                    //while (isIdleStep)
+                    //{
+                    //    isIdleStep = false;
+                    //    for (int i = 0; i < (int)variableCount.Value + 1 - iter; i++)
+                    //        if (Fraction.ToFraction(this.artificialBaseMethodGrid[i, startRow + (int)this.linesCount.Value].Value.ToString()) != 0)
+                    //        {
+                    //            isIdleStep = true;
+                    //            break;
+                    //        }
+
+                    //    // холостой шаг(если нужен)
+                    //    if (isIdleStep)
+                    //    {
+                    //        supEl = SuportElements(this.artificialBaseMethodGrid);
+                    //        IdleStep();
+                    //    }
+
+                    //    if (this.fractionView.Text == "Десятичные")
+                    //    {
+                    //        for (int i = 0; i < (int)variableCount.Value + 2 - iter; i++)
+                    //            for (int j = startRow; j < startRow + (int)this.linesCount.Value + 1; j++)
+                    //                this.artificialBaseMethodGrid[i, j].Value = Fraction.ToFraction(this.artificialBaseMethodGrid[i, j].Value.ToString()).ToDouble();
+                    //    }
+                    //}
+
                     supEl = SuportElements(this.artificialBaseMethodGrid);// Нашли все опорные элементы
+
+                    if(supEl.Count==0 && Fraction.ToFraction(this.artificialBaseMethodGrid[(int)variableCount.Value + 1 - iter, startRow + (int)this.linesCount.Value].Value.ToString())!=0)
+                    {
+                        this.artificialBaseLabel.Text = "Нет решений";
+                        return;
+                    }
 
                     SetColorsOnSupElements(supEl, this.artificialBaseMethodGrid);// Раскрасили все опорные элементы
 
@@ -658,6 +730,7 @@ namespace LinearProgrammingTask
                     else
                         columnCount--;
                 }
+
                 for (int i = 0, rowCount = 0; i < (int)this.variableCount.Value; i++, rowCount++)
                 {
                     if (baseVars.Contains(i + 1))
@@ -681,6 +754,14 @@ namespace LinearProgrammingTask
                 // Заполнение правой части
                 for (int i = 0; i < (int)this.linesCount.Value; i++)
                     this.simplexMethodGrid[(int)this.variableCount.Value - (int)this.linesCount.Value, i].Value = Solution.RightPart[i].ToString();
+
+                for (int i = 0; i < (int)this.linesCount.Value; i++)
+                    if (Fraction.ToFraction(this.simplexMethodGrid[(int)this.variableCount.Value - (int)this.linesCount.Value, i].Value.ToString()) < 0)
+                    {
+                        this.answerLabel.Text = "Плохой базис";
+                        return;
+                    }
+
             }
             else
             {
@@ -758,6 +839,11 @@ namespace LinearProgrammingTask
 
             if (developmentMethod.Text == "Графический метод")
             {
+                if((int)this.variableCount.Value-(int)this.linesCount.Value!=2)
+                {
+                    MessageBox.Show("Количесво ограничений должно быть на 2 меньше, чем количество переменных");
+                    return;
+                }
                 for (int i = startRow; i < (int)this.linesCount.Value; i++)
                 {
                     Gr_Method.AddLine(Fraction.ToFraction(this.simplexMethodGrid[0, i].Value.ToString()).ToDouble(),
@@ -768,8 +854,8 @@ namespace LinearProgrammingTask
                     -1 * Fraction.ToFraction(this.simplexMethodGrid[0, (int)this.linesCount.Value].Value.ToString()).ToDouble();
                 double B = this.optimizeTask.Text == "Min" ? Fraction.ToFraction(this.simplexMethodGrid[1, (int)this.linesCount.Value].Value.ToString()).ToDouble() :
                     -1 * Fraction.ToFraction(this.simplexMethodGrid[1, (int)this.linesCount.Value].Value.ToString()).ToDouble();
-                double C = this.optimizeTask.Text == "Min" ? Fraction.ToFraction(this.simplexMethodGrid[2, (int)this.linesCount.Value].Value.ToString()).ToDouble() :
-                    -1 * Fraction.ToFraction(this.simplexMethodGrid[2, (int)this.linesCount.Value].Value.ToString()).ToDouble();
+                double C = this.optimizeTask.Text == "Min" ? -1 * Fraction.ToFraction(this.simplexMethodGrid[2, (int)this.linesCount.Value].Value.ToString()).ToDouble() :
+                     Fraction.ToFraction(this.simplexMethodGrid[2, (int)this.linesCount.Value].Value.ToString()).ToDouble();
 
                 Gr_Method.SetObjectFunction(A, B, C, this.optimizeTask.Text == "Min" ? -1 : 1);
                 wasPushBtnOK = true;
@@ -811,6 +897,7 @@ namespace LinearProgrammingTask
             //Выбор и закрашивание главного опорного элемента
             if (this.solutionMode.Text != "Пошаговый")
             {
+                supEl = SuportElements(this.artificialBaseMethodGrid);// Нашли все опорные элементы
                 mainSupElement = supEl.Find((p) => p.Y == numOfExcessStr);
                 this.artificialBaseMethodGrid[mainSupElement.X, mainSupElement.Y].Style.BackColor = Color.FromArgb(255, 255, 0, 255);
             }
@@ -1318,8 +1405,17 @@ namespace LinearProgrammingTask
         {
             if (!IsEndArtificialBaseMethod())
             {
+                if (supEl.Count == 0 && Fraction.ToFraction(this.artificialBaseMethodGrid[(int)variableCount.Value + 1 - iter, startRow + (int)this.linesCount.Value].Value.ToString()) != 0)
+                {
+                    this.artificialBaseLabel.Text = "Нет решений";
+                    this.stepForwardArtificial.Enabled = false;
+                    this.stepBackArtificial.Enabled = false;
+                    return;
+                }
                 startRow += (int)this.linesCount.Value + 3;// Строка, с которой будет начинаться каждая новая таблица
                 this.artificialBaseMethodGrid.Rows[startRow - 1].HeaderCell.Value = String.Concat("x(", iter, ")");// Номер новой строки
+
+               
 
                 SimplexStepArtificial(this.artificialBaseMethodGrid);// Шаг метода искуссвенного базиса
                 iter++;

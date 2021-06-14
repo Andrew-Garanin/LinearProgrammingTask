@@ -29,8 +29,8 @@ namespace LinearProgrammingTask
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.linesGrid = new System.Windows.Forms.DataGridView();
             this.variableCount = new System.Windows.Forms.NumericUpDown();
@@ -73,6 +73,15 @@ namespace LinearProgrammingTask
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.grad = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.panel7 = new System.Windows.Forms.Panel();
+            this.panel6 = new System.Windows.Forms.Panel();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.ogr = new System.Windows.Forms.Label();
+            this.func = new System.Windows.Forms.Label();
             this.GraphAnswerLabel = new System.Windows.Forms.Label();
             this.picGrafic = new System.Windows.Forms.PictureBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -81,15 +90,6 @@ namespace LinearProgrammingTask
             this.MenuItemOpen = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
-            this.func = new System.Windows.Forms.Label();
-            this.ogr = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
-            this.panel5 = new System.Windows.Forms.Panel();
-            this.panel6 = new System.Windows.Forms.Panel();
-            this.panel7 = new System.Windows.Forms.Panel();
-            this.label14 = new System.Windows.Forms.Label();
-            this.grad = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.linesGrid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.variableCount)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.linesCount)).BeginInit();
@@ -408,6 +408,7 @@ namespace LinearProgrammingTask
             // 
             // stepBackArtificial
             // 
+            this.stepBackArtificial.Enabled = false;
             this.stepBackArtificial.Location = new System.Drawing.Point(590, 241);
             this.stepBackArtificial.Name = "stepBackArtificial";
             this.stepBackArtificial.Size = new System.Drawing.Size(146, 70);
@@ -418,6 +419,7 @@ namespace LinearProgrammingTask
             // 
             // stepForwardArtificial
             // 
+            this.stepForwardArtificial.Enabled = false;
             this.stepForwardArtificial.Location = new System.Drawing.Point(590, 136);
             this.stepForwardArtificial.Name = "stepForwardArtificial";
             this.stepForwardArtificial.Size = new System.Drawing.Size(146, 72);
@@ -473,22 +475,22 @@ namespace LinearProgrammingTask
             this.artificialBaseMethodGrid.AllowUserToAddRows = false;
             this.artificialBaseMethodGrid.AllowUserToDeleteRows = false;
             this.artificialBaseMethodGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle9.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle9.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle9.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.Color.Transparent;
-            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.artificialBaseMethodGrid.DefaultCellStyle = dataGridViewCellStyle9;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.Transparent;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.artificialBaseMethodGrid.DefaultCellStyle = dataGridViewCellStyle1;
             this.artificialBaseMethodGrid.Location = new System.Drawing.Point(27, 46);
             this.artificialBaseMethodGrid.MultiSelect = false;
             this.artificialBaseMethodGrid.Name = "artificialBaseMethodGrid";
             this.artificialBaseMethodGrid.ReadOnly = true;
             this.artificialBaseMethodGrid.RowHeadersWidth = 70;
-            dataGridViewCellStyle10.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            this.artificialBaseMethodGrid.RowsDefaultCellStyle = dataGridViewCellStyle10;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            this.artificialBaseMethodGrid.RowsDefaultCellStyle = dataGridViewCellStyle2;
             this.artificialBaseMethodGrid.RowTemplate.Height = 25;
             this.artificialBaseMethodGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.artificialBaseMethodGrid.Size = new System.Drawing.Size(515, 379);
@@ -515,6 +517,7 @@ namespace LinearProgrammingTask
             // 
             // stepBackSimplex
             // 
+            this.stepBackSimplex.Enabled = false;
             this.stepBackSimplex.Location = new System.Drawing.Point(596, 240);
             this.stepBackSimplex.Name = "stepBackSimplex";
             this.stepBackSimplex.Size = new System.Drawing.Size(146, 70);
@@ -525,6 +528,7 @@ namespace LinearProgrammingTask
             // 
             // stepForwardSimplex
             // 
+            this.stepForwardSimplex.Enabled = false;
             this.stepForwardSimplex.Location = new System.Drawing.Point(596, 135);
             this.stepForwardSimplex.Name = "stepForwardSimplex";
             this.stepForwardSimplex.Size = new System.Drawing.Size(146, 72);
@@ -611,6 +615,82 @@ namespace LinearProgrammingTask
             this.tabPage4.Text = "Графический метод";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
+            // grad
+            // 
+            this.grad.AutoSize = true;
+            this.grad.Location = new System.Drawing.Point(517, 176);
+            this.grad.Name = "grad";
+            this.grad.Size = new System.Drawing.Size(0, 17);
+            this.grad.TabIndex = 15;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(549, 138);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(165, 21);
+            this.label14.TabIndex = 14;
+            this.label14.Text = "Вектор - градиент:";
+            // 
+            // panel7
+            // 
+            this.panel7.BackColor = System.Drawing.Color.Red;
+            this.panel7.Location = new System.Drawing.Point(520, 133);
+            this.panel7.Name = "panel7";
+            this.panel7.Size = new System.Drawing.Size(23, 22);
+            this.panel7.TabIndex = 13;
+            // 
+            // panel6
+            // 
+            this.panel6.BackColor = System.Drawing.Color.RoyalBlue;
+            this.panel6.Location = new System.Drawing.Point(755, 39);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(23, 22);
+            this.panel6.TabIndex = 13;
+            // 
+            // panel5
+            // 
+            this.panel5.BackColor = System.Drawing.Color.LawnGreen;
+            this.panel5.Location = new System.Drawing.Point(520, 38);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(23, 22);
+            this.panel5.TabIndex = 13;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(784, 43);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(100, 17);
+            this.label11.TabIndex = 12;
+            this.label11.Text = "Ограничения:";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(549, 39);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(71, 17);
+            this.label10.TabIndex = 11;
+            this.label10.Text = "Функция:";
+            // 
+            // ogr
+            // 
+            this.ogr.AutoSize = true;
+            this.ogr.Location = new System.Drawing.Point(765, 77);
+            this.ogr.Name = "ogr";
+            this.ogr.Size = new System.Drawing.Size(0, 17);
+            this.ogr.TabIndex = 10;
+            // 
+            // func
+            // 
+            this.func.AutoSize = true;
+            this.func.Location = new System.Drawing.Point(517, 77);
+            this.func.Name = "func";
+            this.func.Size = new System.Drawing.Size(44, 17);
+            this.func.TabIndex = 9;
+            this.func.Text = "f(x) = ";
+            // 
             // GraphAnswerLabel
             // 
             this.GraphAnswerLabel.AutoSize = true;
@@ -650,7 +730,7 @@ namespace LinearProgrammingTask
             this.MenuItemSaveAs,
             this.MenuItemOpen});
             this.Menu.Name = "Menu";
-            this.Menu.Size = new System.Drawing.Size(59, 34);
+            this.Menu.Size = new System.Drawing.Size(59, 24);
             this.Menu.Text = "Файл";
             // 
             // MenuItemSaveAs
@@ -670,85 +750,9 @@ namespace LinearProgrammingTask
             // MenuAbout
             // 
             this.MenuAbout.Name = "MenuAbout";
-            this.MenuAbout.Size = new System.Drawing.Size(127, 34);
+            this.MenuAbout.Size = new System.Drawing.Size(127, 24);
             this.MenuAbout.Text = "О программе...";
             this.MenuAbout.Click += new System.EventHandler(this.MenuAbout_Click);
-            // 
-            // func
-            // 
-            this.func.AutoSize = true;
-            this.func.Location = new System.Drawing.Point(517, 77);
-            this.func.Name = "func";
-            this.func.Size = new System.Drawing.Size(44, 17);
-            this.func.TabIndex = 9;
-            this.func.Text = "f(x) = ";
-            // 
-            // ogr
-            // 
-            this.ogr.AutoSize = true;
-            this.ogr.Location = new System.Drawing.Point(765, 77);
-            this.ogr.Name = "ogr";
-            this.ogr.Size = new System.Drawing.Size(0, 17);
-            this.ogr.TabIndex = 10;
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(549, 39);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(71, 17);
-            this.label10.TabIndex = 11;
-            this.label10.Text = "Функция:";
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(784, 43);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(100, 17);
-            this.label11.TabIndex = 12;
-            this.label11.Text = "Ограничения:";
-            // 
-            // panel5
-            // 
-            this.panel5.BackColor = System.Drawing.Color.LawnGreen;
-            this.panel5.Location = new System.Drawing.Point(520, 38);
-            this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(23, 22);
-            this.panel5.TabIndex = 13;
-            // 
-            // panel6
-            // 
-            this.panel6.BackColor = System.Drawing.Color.RoyalBlue;
-            this.panel6.Location = new System.Drawing.Point(755, 39);
-            this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(23, 22);
-            this.panel6.TabIndex = 13;
-            // 
-            // panel7
-            // 
-            this.panel7.BackColor = System.Drawing.Color.Red;
-            this.panel7.Location = new System.Drawing.Point(520, 133);
-            this.panel7.Name = "panel7";
-            this.panel7.Size = new System.Drawing.Size(23, 22);
-            this.panel7.TabIndex = 13;
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(549, 138);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(124, 17);
-            this.label14.TabIndex = 14;
-            this.label14.Text = "Вектор-градиент:";
-            // 
-            // grad
-            // 
-            this.grad.AutoSize = true;
-            this.grad.Location = new System.Drawing.Point(517, 176);
-            this.grad.Name = "grad";
-            this.grad.Size = new System.Drawing.Size(0, 17);
-            this.grad.TabIndex = 15;
             // 
             // Form1
             // 

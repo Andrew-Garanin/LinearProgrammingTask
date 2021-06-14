@@ -269,6 +269,8 @@ namespace Mehroz
 			{
 				checked
 				{
+					if(dValue.ToString().Length>7)
+						dValue= Math.Round(dValue, 7);
 					Fraction frac;
 					if (dValue%1==0)	// if whole number
 					{

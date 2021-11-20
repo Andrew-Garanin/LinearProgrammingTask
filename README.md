@@ -32,5 +32,5 @@ i=1..5
 
 # Interface screenshots based on above task:
 
-<img src="https://github.com/Andrew-Garanin/LinearProgrammingTask/blob/master/screenshots/Screenshot_1.jpg" width="700" height="500"/>
+<img src="https://github.com/Andrew-Garanin/LinearProgrammingTask/blob/master/screenshots/Screenshot_1.jpg" width="700" height="430"/>
 

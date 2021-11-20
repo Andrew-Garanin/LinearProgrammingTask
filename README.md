@@ -33,4 +33,8 @@ i=1..5
 # Interface screenshots based on above task:
 
 <img src="https://github.com/Andrew-Garanin/LinearProgrammingTask/blob/master/screenshots/Screenshot_1.jpg" width="700" height="430"/>
+<img src="https://github.com/Andrew-Garanin/LinearProgrammingTask/blob/master/screenshots/Screenshot_2.jpg" width="700" height="430"/>
+<img src="https://github.com/Andrew-Garanin/LinearProgrammingTask/blob/master/screenshots/Screenshot_3.jpg" width="700" height="430"/>
+<img src="https://github.com/Andrew-Garanin/LinearProgrammingTask/blob/master/screenshots/Screenshot_4.jpg" width="700" height="430"/>
+<img src="https://github.com/Andrew-Garanin/LinearProgrammingTask/blob/master/screenshots/Screenshot_5.jpg" width="700" height="430"/>
 
